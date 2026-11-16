@@ -151,7 +151,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V3 | 51 fotos sacadas del PDF a máxima resolución (62 productos con foto). |
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
-| 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. **Pendiente de subir a GitHub.** |
+| 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. Publicada en Vercel y verificada. |
 
 ---
 
@@ -159,3 +159,13 @@ Git está instalado en `C:\Program Files\Git`.
 1. **Proyecto de claude.ai "CREAR APPS"**, como documento `COFFIT_APP_PROYECTO.md`. Se lee en cada chat nuevo del proyecto.
 2. **PC de David:** `CLAUDA_APP_VIRU\COFFIT_APP_PROYECTO.md`.
 3. **Repo GitHub,** como `CLAUDE.md` (cuando Claude tenga permiso de push o David lo suba).
+
+---
+
+## 9. Cómo trabajar cada mejora (acordado con David)
+1. Leer este archivo y el `index.html` actual del repo (`git clone --depth 1` vía `add_repo`).
+2. Hacer el cambio, revisarlo con una captura en navegador headless.
+3. Sincronizar todo: **GitHub** (commit + push a `main`) → **Vercel** publica solo → **Supabase** (migraciones SQL si cambia la base) → copia en la carpeta de David → vista previa en el artifact.
+4. Verificar en https://coffit-app.vercel.app.
+5. Actualizar este archivo (secciones afectadas + Registro de cambios) en el repo (`CLAUDE.md`), en el Proyecto de claude.ai y en la carpeta.
+6. Si algo requiere a David por seguridad (códigos, permisos, contraseñas, pagos, subir archivos desde su PC), darle pasos cortos y claros.

@@ -468,7 +468,9 @@ function addToCart(it){
 const subtotal=()=>cart.reduce((s,i)=>s+i.unit*i.qty,0);
 const fee=()=>mode==='delivery'&&subtotal()>0&&subtotal()<FREE_FROM?DELIVERY_FEE:0;
 function wedOff(){ if(new Date().getDay()!==3)return 0; const u=[]; cart.forEach(i=>{if(/^Frap/.test(i.name)&&!/16 oz/.test(i.det))for(let k=0;k<i.qty;k++)u.push(i.unit)}); u.sort((a,b)=>a-b); let d=0; for(let k=0;k<Math.floor(u.length/2);k++)d+=u[k]/2; return d }
-const tapers=()=>mode==='mesa'?0:cart.reduce((s,i)=>s+i.qty,0)*TAPER;
+const TAPER2=/club s[aá]ndwich|pollo a la plancha/i; // estos dos llevan táper de S/ 2
+const tap=i=>mode==='mesa'?0:(TAPER2.test(i.name)?2:TAPER);
+const tapers=()=>cart.reduce((s,i)=>s+tap(i)*i.qty,0);
 const total=()=>subtotal()+tapers()+fee()-wedOff();
 function drawCart(){
   const n=cart.reduce((s,i)=>s+i.qty,0);
@@ -486,11 +488,11 @@ function upsells(){
 function openCart(){
   if(!cart.length){openSheet(`<h3>Tu pedido está vacío</h3><p class="lead">Elige algo de la carta para empezar.</p><div class="qrow"><button class="cta" id="gm">Ver la carta</button></div>`);$('#gm').onclick=()=>{closeSheet();openGroup('top')};return}
   const st=subtotal(), f=fee(), w=wedOff(), ups=upsells();
-  openSheet(`<h3>Tu pedido</h3>`+cart.map((i,x)=>`<div class="ln"><div><b>${i.name}</b>${i.det?`<div class="x">${i.det}</div>`:''}${i.note?`<div class="x">Nota: ${i.note}</div>`:''}${mode!=='mesa'?`<div class="x">+ Táper ${money(TAPER)} c/u${i.qty>1?' · '+money(TAPER*i.qty):''}</div>`:''}<div class="step"><button data-d="${x}" aria-label="Quitar uno">−</button><span>${i.qty}</span><button data-u="${x}" aria-label="Agregar otro">+</button></div></div><div>${money(i.unit*i.qty)}</div></div>`).join('')+
+  openSheet(`<h3>Tu pedido</h3>`+cart.map((i,x)=>`<div class="ln"><div><b>${i.name}</b>${i.det?`<div class="x">${i.det}</div>`:''}${i.note?`<div class="x">Nota: ${i.note}</div>`:''}${mode!=='mesa'?`<div class="x">+ Táper ${money(tap(i))} c/u${i.qty>1?' · '+money(tap(i)*i.qty):''}</div>`:''}<div class="step"><button data-d="${x}" aria-label="Quitar uno">−</button><span>${i.qty}</span><button data-u="${x}" aria-label="Agregar otro">+</button></div></div><div>${money(i.unit*i.qty)}</div></div>`).join('')+
     (ups.length?`<div class="lbl">¿Le sumas algo?</div><div class="ups">`+ups.map(m=>`<button data-up="${m.id}"><b>${m.n}</b>+ ${money(m.p)}</button>`).join('')+`</div>`:'')+
     (mode==='delivery'?(st<FREE_FROM?`<p class="hint">Te faltan <b>${money(FREE_FROM-st)}</b> para tener delivery gratis.</p><div class="bar"><i style="width:${Math.min(100,st/FREE_FROM*100)}%"></i></div>`:`<p class="hint save">Tu delivery es gratis.</p>`):'')+
     `<div style="margin-top:14px"><div class="sum"><span>Subtotal</span><span>${money(st)}</span></div>`+
-    (tapers()?`<div class="sum"><span>Tápers (${tapers()/TAPER} × ${money(TAPER)})</span><span>${money(tapers())}</span></div>`:'')+
+    (tapers()?`<div class="sum"><span>Tápers (${cart.reduce((s,i)=>s+i.qty,0)})</span><span>${money(tapers())}</span></div>`:'')+
     (w?`<div class="sum save"><span>Miércoles Coffit</span><span>− ${money(w)}</span></div>`:'')+
     (mode==='delivery'?`<div class="sum"><span>Delivery</span><span>${f?money(f):'Gratis'}</span></div>`:'')+
     `<div class="sum t"><span>Total</span><span>${money(total())}</span></div></div>`+
@@ -523,7 +525,7 @@ function checkout(){
     const L=['*Nuevo pedido Coffit*',{mesa:'Mesa '+v('mesa'),recojo:'Para recoger'+(v('hora')?' a las '+v('hora'):''),delivery:'Delivery'}[mode],v('nom')+' · '+v('cel')];
     if(mode==='delivery')L.push(v('dir')+(v('ref')?' ('+v('ref')+')':''));
     L.push('');
-    cart.forEach(i=>{L.push(`${i.qty} x ${i.name} — ${money(i.unit*i.qty)}`);if(i.det)L.push('   '+i.det);if(i.note)L.push('   Nota: '+i.note);if(mode!=='mesa')L.push('   + Táper '+money(TAPER*i.qty))});
+    cart.forEach(i=>{L.push(`${i.qty} x ${i.name} — ${money(i.unit*i.qty)}`);if(i.det)L.push('   '+i.det);if(i.note)L.push('   Nota: '+i.note);if(mode!=='mesa')L.push('   + Táper '+money(tap(i)*i.qty))});
     L.push('');
     if(tapers())L.push('Tápers: '+money(tapers()));
     if(wedOff())L.push('Miércoles Coffit: − '+money(wedOff()));
@@ -566,8 +568,8 @@ $$('[data-jump]').forEach(b=>b.onclick=()=>openGroup(b.dataset.jump));
 const MODEICON={"mesa": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 9h16\"/><path d=\"M6 9v10M18 9v10\"/><path d=\"M8 5h8\"/></svg>", "recojo": "<svg viewBox=\"0 0 24 24\"><path d=\"M5 8h14l-1.4 11.2a1 1 0 0 1-1 .8H7.4a1 1 0 0 1-1-.8z\"/><path d=\"M9 8V6a3 3 0 0 1 6 0v2\"/></svg>", "delivery": "<svg viewBox=\"0 0 24 24\"><circle cx=\"6.5\" cy=\"17\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17\" r=\"2.5\"/><path d=\"M9 17h6l-2-6H9\"/><path d=\"M15 6h2l3 6v5\"/><path d=\"M4 12h5\"/></svg>"};
 const MODEINFO={
   mesa:['Pedido en tu mesa','Pide desde tu celular y te lo llevamos a la mesa. Al final te pedimos el número de mesa.','En mesa'],
-  recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Cada producto va en táper (+S/ '+TAPER+' c/u).','Para recoger'],
-  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Cada producto va en táper (+S/ '+TAPER+' c/u).','Delivery']};
+  recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Cada producto va en táper (+S/ '+TAPER+' c/u; club sándwich y pollo a la plancha, S/ 2).','Para recoger'],
+  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Cada producto va en táper (+S/ '+TAPER+' c/u; club sándwich y pollo a la plancha, S/ 2).','Delivery']};
 function setMode(m,anim){
   mode=m; document.body.dataset.mode=m;
   $$('#modes button').forEach(x=>{const on=x.dataset.m===m;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});

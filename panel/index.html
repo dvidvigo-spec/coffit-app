@@ -26,6 +26,8 @@ button:focus-visible,input:focus-visible{outline:2.5px solid var(--caramel);outl
 .login p{color:var(--muted);margin:0 0 18px;line-height:1.45}
 .f{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px;font-size:15px;font-family:inherit;margin-bottom:10px;background:#fff}
 .btn{width:100%;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:15px;background:var(--espresso);color:var(--milk)}
+.pwrap{position:relative}.pwrap .f{padding-right:96px}
+.eye{position:absolute;right:6px;top:6px;height:38px;padding:0 12px;border:0;border-radius:9px;background:var(--caramel-soft);color:var(--espresso);font-weight:700;font-size:13.5px}
 .btn2{width:100%;margin-top:10px;border:1.5px solid var(--espresso);border-radius:12px;padding:13px;font-weight:800;font-size:15px;background:transparent;color:var(--espresso)}
 .link{background:none;border:0;color:var(--caramel);font-weight:700;padding:10px 0;font-size:14px}
 .msg{font-size:13.5px;margin-top:10px;line-height:1.45}
@@ -88,7 +90,7 @@ ul.items small{display:block;color:var(--muted);font-size:12.5px}
   <p>Ingreso solo para el personal. Aquí llegan los pedidos de la app en tiempo real.</p>
   <form id="fLogin">
     <input class="f" id="em" type="email" placeholder="Correo de Coffit" autocomplete="username" required>
-    <input class="f" id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required minlength="8">
+    <div class="pwrap"><input class="f" id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required minlength="8"><button type="button" class="eye" id="eye" aria-label="Mostrar contraseña">Mostrar</button></div>
     <button class="btn" id="bIn" type="submit">Ingresar</button>
   </form>
   <button class="btn2" id="bSignup" type="button">Primera vez: crear el acceso</button>
@@ -139,11 +141,15 @@ $('#fLogin').onsubmit=async e=>{
   if(error){lmsg(/confirm/i.test(error.message)?'Primero confirma tu correo: revisa la bandeja de Gmail (o Spam) y abre el enlace de Supabase.':'Correo o contraseña incorrectos. Si es la primera vez, toca "Primera vez: crear el acceso".');return}
   start();
 };
+$('#eye').onclick=()=>{const p=$('#pw'),v=p.type==='password';p.type=v?'text':'password';$('#eye').textContent=v?'Ocultar':'Mostrar';$('#eye').setAttribute('aria-label',v?'Ocultar contraseña':'Mostrar contraseña')};
 $('#bSignup').onclick=async()=>{
+  if($('#bSignup').disabled)return;
   const email=$('#em').value.trim().toLowerCase(), password=$('#pw').value;
   if(!email||password.length<8){lmsg('Escribe el correo de Coffit y una contraseña de al menos 8 caracteres, luego toca de nuevo.');return}
+  $('#bSignup').disabled=true;
   const {error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/panel/'}});
-  if(error){lmsg('No se pudo crear el acceso: '+error.message);return}
+  $('#bSignup').disabled=false;
+  if(error){lmsg(/already|registered|Database error/i.test(error.message)?'Este correo ya tiene acceso creado. Toca "Ingresar".':'No se pudo crear el acceso: '+error.message);return}
   lmsg('Listo. Te enviamos un correo para confirmar. Ábrelo, toca el enlace y luego vuelve aquí a ingresar.',true);
 };
 $('#bOut').onclick=async()=>{await sb.auth.signOut();location.reload()};

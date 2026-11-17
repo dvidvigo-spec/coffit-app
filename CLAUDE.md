@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.11 (desayuno fit y tropical con 3 tápers).
+> Última actualización: 17 nov 2026, versión V9.12 (acceso al panel creado; botón Mostrar contraseña).
 
 ---
 
@@ -144,7 +144,7 @@ Git está instalado en `C:\Program Files\Git`.
 
 **Técnicos:**
 - [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
-- [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Se usará una sola cuenta compartida (coffit.cafeteria1@gmail.com) para todo el personal. Falta: David crea el acceso y confirma el correo.
+- [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Se usa una sola cuenta compartida (coffit.cafeteria1@gmail.com) para todo el personal; David la creó el 17 nov y Claude confirmó el correo por SQL (`auth.users.email_confirmed_at`).
 - [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
 - [ ] Club Coffit: que el cliente vea sus sellos reales (hoy el conteo oficial está en el panel; la app del cliente muestra un conteo local). Solo cuentan pedidos hechos por la app y marcados como Entregado.
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.12 | Panel: botón "Mostrar/Ocultar" contraseña, botón grande "Primera vez: crear el acceso" (sin doble toque) y cuenta coffit.cafeteria1@gmail.com creada y confirmada. |
 | 17 nov 2026 | V9.11 | Desayuno fit y Desayuno tropical: 3 tápers cada uno. |
 | 17 nov 2026 | V9.10 | Tápers por producto: desayuno al paso 2, americano 3, criollo 4, del bosque 4, Coffit 4, clásico 1 (club sándwich y pollo a la plancha siguen en 2). |
 | 17 nov 2026 | V9.9 | Botón "Eliminar" bajo el precio de cada producto en "Tu pedido". |

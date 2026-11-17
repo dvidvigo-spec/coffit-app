@@ -28,9 +28,10 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 | WhatsApp oficial | **944 667 516** (`wa.me/51944667516`). Recibe los pedidos y el botón de contacto. El 941 112 979 de la carta ya NO es el oficial. |
 | Vista previa en Claude | Artifact "Coffit Pide Aquí", https://claude.ai/artifact/C1Ec74V8fhmQCLt61ctMwL (ahí Supabase no conecta; usa la carta incluida). |
 
+**Supabase desde Claude:** el conector de Supabase está conectado a Claude (17 nov 2026). Claude puede consultar y migrar la base directo (`execute_sql`, `apply_migration`, `get_advisors`) también desde el celular, sin Chrome. Project id: `curlxsugmcjurewfngqm`.
+
 **Cómo publicar un cambio:**
-- **Hoy:** David sube `index.html` a mano en GitHub (Add file → Upload files). El archivo está en `D:\POKERSTUDY\DvidVigo\DOCUMENTOS DE CLAUDE\CLAUDA_APP_VIRU\coffit-app\index.html`. Vercel publica solo.
-- **Para que Claude suba los cambios directamente,** falta instalar la Claude GitHub App en el repo: https://github.com/apps/claude/installations/select_target. Con eso, Claude clona con `add_repo`, hace commit y push.
+- **Claude sube los cambios directamente** (GitHub conectado desde el 16 nov): `add_repo` → clonar → commit → push a `main`, y Vercel publica solo. David puede pedir cambios solo desde el celular.
 - Por seguridad, la subida de archivos desde Chrome la tiene que hacer David. Los códigos de verificación y las aprobaciones de permisos (OAuth) también los hace él.
 
 ---
@@ -134,7 +135,7 @@ Git está instalado en `C:\Program Files\Git`.
 
 **Técnicos:**
 - [ ] **Subir la V6 a GitHub:** hoy https://coffit-app.vercel.app sigue con la V5, sin Supabase. El archivo correcto ya está en `coffit-app\index.html`.
-- [ ] Instalar la Claude GitHub App en el repo para que Claude pueda hacer push.
+- [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
 - [ ] Panel interno para Coffit: ver pedidos nuevos y cambiar su estado.
 - [ ] Club Coffit en Supabase (sellos por celular, no en el celular del cliente).
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
@@ -151,6 +152,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V3 | 51 fotos sacadas del PDF a máxima resolución (62 productos con foto). |
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
+| 17 nov 2026 | — | Conector de Supabase conectado a Claude; asesor de seguridad sin alertas; primer pedido real registrado (id 2, recojo, S/ 47). |
 | 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. Publicada en Vercel y verificada. |
 
 ---

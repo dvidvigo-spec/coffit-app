@@ -31,7 +31,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2.5px so
 .where{font-size:12.5px;color:var(--muted);text-align:right;line-height:1.35}
 .modes{margin:0 16px;display:grid;grid-template-columns:repeat(3,1fr);background:var(--caramel-soft);border-radius:14px;padding:4px;gap:4px}
 .modes button{border:0;background:transparent;padding:10px 4px;border-radius:10px;font-weight:600;font-size:14px;color:var(--muted)}
-.modes button.on{background:var(--espresso);color:var(--milk)}
+.modes button.on{background:var(--mode);color:#fff}
+.modes{transition:background .3s}
+.modes button{display:flex;align-items:center;justify-content:center;gap:6px;transition:background .25s,color .25s}
+.modes svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+body{--mode:#B98D62;--mode-soft:#F3E7D9;--mode-ink:#5C4128}
+body[data-mode="recojo"]{--mode:#5E7B4C;--mode-soft:#E4ECDD;--mode-ink:#3B5230}
+body[data-mode="delivery"]{--mode:#2F6690;--mode-soft:#DDE9F2;--mode-ink:#1E4766}
+.modeinfo{margin:10px 16px 0;display:flex;gap:12px;align-items:center;background:var(--mode-soft);color:var(--mode-ink);border-radius:16px;padding:12px 14px;border-left:5px solid var(--mode);transition:background .3s,color .3s,border-color .3s}
+.modeinfo .mi{width:40px;height:40px;border-radius:12px;background:var(--mode);display:flex;align-items:center;justify-content:center;flex:none}
+.modeinfo .mi svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.modeinfo b{display:block;font-size:15px}
+.modeinfo span{font-size:13px;line-height:1.35;display:block}
+.modeinfo.pop{animation:modepop .45s ease}
+@keyframes modepop{0%{transform:translateY(-6px) scale(.97);opacity:.3}60%{transform:translateY(1px) scale(1.01);opacity:1}100%{transform:none}}
+.modebadge{display:inline-block;background:rgba(255,255,255,.22);border-radius:999px;padding:1px 8px;font-size:12px;margin-left:6px;font-weight:700}
 
 .searchbtn{margin:12px 16px 0;width:calc(100% - 32px);display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:13px 14px;font-size:15px;color:var(--muted);text-align:left}
 
@@ -113,8 +127,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2.5px so
 /* Bottom: cart bar + nav */
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--milk);box-shadow:0 -1px 0 var(--line);padding-bottom:env(safe-area-inset-bottom)}
 .dock .in{max-width:520px;margin:0 auto}
-.cartbar{display:none;margin:10px 12px 0;width:calc(100% - 24px);border:0;background:var(--leaf);color:#fff;border-radius:16px;padding:14px 16px;font-size:15.5px;font-weight:800;justify-content:space-between;align-items:center}
-.cartbar .n{background:#fff;color:var(--leaf);border-radius:999px;padding:1px 9px;margin-right:8px;font-size:13px}
+.cartbar{display:none;margin:10px 12px 0;width:calc(100% - 24px);border:0;background:var(--mode);transition:background .3s;color:#fff;border-radius:16px;padding:14px 16px;font-size:15.5px;font-weight:800;justify-content:space-between;align-items:center}
+.cartbar .n{background:#fff;color:var(--mode);border-radius:999px;padding:1px 9px;margin-right:8px;font-size:13px}
 .cartbar.bump{animation:bump .35s ease}
 @keyframes bump{40%{transform:scale(1.03)}}
 nav.bn{display:grid;grid-template-columns:repeat(4,1fr)}
@@ -188,10 +202,11 @@ textarea,.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:1
     <div class="where">Calle Libertad 316, Virú<br>Hoy abierto hasta las 11 p. m.</div>
   </div>
   <div class="modes" id="modes" role="tablist" aria-label="Cómo recibes tu pedido">
-    <button data-m="mesa" class="on">En mesa</button>
-    <button data-m="recojo">Para recoger</button>
-    <button data-m="delivery">Delivery</button>
+    <button data-m="mesa" class="on"><svg viewBox="0 0 24 24"><path d="M4 9h16"/><path d="M6 9v10M18 9v10"/><path d="M8 5h8"/></svg>En mesa</button>
+    <button data-m="recojo"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.4 11.2a1 1 0 0 1-1 .8H7.4a1 1 0 0 1-1-.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Recoger</button>
+    <button data-m="delivery"><svg viewBox="0 0 24 24"><circle cx="6.5" cy="17" r="2.5"/><circle cx="17.5" cy="17" r="2.5"/><path d="M9 17h6l-2-6H9"/><path d="M15 6h2l3 6v5"/><path d="M4 12h5"/></svg>Delivery</button>
   </div>
+  <div class="modeinfo" id="modeinfo" aria-live="polite"></div>
   <button class="searchbtn" id="goSearch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Busca un plato o bebida</button>
   <div class="promo" id="promo"></div>
   <button class="again" id="again"></button>
@@ -235,7 +250,7 @@ textarea,.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:1
 <a class="wa" id="wa" href="https://wa.me/51944667516?text=Hola%20Coffit%2C%20tengo%20una%20consulta" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp al 944 667 516">
 <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16.04 3C8.86 3 3.04 8.82 3.04 16c0 2.3.6 4.54 1.74 6.52L3 29l6.66-1.74A12.94 12.94 0 0 0 16.04 29C23.22 29 29 23.18 29 16S23.22 3 16.04 3Zm0 23.64c-2 0-3.96-.54-5.67-1.56l-.4-.24-3.95 1.03 1.05-3.85-.26-.4A10.6 10.6 0 0 1 5.4 16c0-5.87 4.77-10.64 10.64-10.64S26.66 10.13 26.66 16 21.9 26.64 16.04 26.64Zm5.84-7.97c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.73-.98-2.37-.26-.62-.52-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.12 1.09-1.12 2.66s1.15 3.09 1.31 3.3c.16.21 2.26 3.45 5.47 4.84.76.33 1.36.53 1.83.68.77.24 1.47.21 2.02.13.62-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37Z"/></svg></a>
 <div class="dock"><div class="in">
-  <button class="cartbar" id="cartbar"><span><span class="n" id="cn">0</span>Ver mi pedido</span><span id="ctot">S/ 0.00</span></button>
+  <button class="cartbar" id="cartbar"><span><span class="n" id="cn">0</span>Ver mi pedido<span class="modebadge" id="cmode">En mesa</span></span><span id="ctot">S/ 0.00</span></button>
   <nav class="bn" id="nav">
     <button data-s="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>Inicio</button>
     <button data-s="menu"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg>Carta</button>
@@ -545,7 +560,22 @@ function drawClub(){
 }
 $$('[data-jump]').forEach(b=>b.onclick=()=>openGroup(b.dataset.jump));
 
-$$('#modes button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;$$('#modes button').forEach(x=>x.classList.toggle('on',x===b));drawCart()});
+const MODEICON={"mesa": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 9h16\"/><path d=\"M6 9v10M18 9v10\"/><path d=\"M8 5h8\"/></svg>", "recojo": "<svg viewBox=\"0 0 24 24\"><path d=\"M5 8h14l-1.4 11.2a1 1 0 0 1-1 .8H7.4a1 1 0 0 1-1-.8z\"/><path d=\"M9 8V6a3 3 0 0 1 6 0v2\"/></svg>", "delivery": "<svg viewBox=\"0 0 24 24\"><circle cx=\"6.5\" cy=\"17\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17\" r=\"2.5\"/><path d=\"M9 17h6l-2-6H9\"/><path d=\"M15 6h2l3 6v5\"/><path d=\"M4 12h5\"/></svg>"};
+const MODEINFO={
+  mesa:['Pedido en tu mesa','Pide desde tu celular y te lo llevamos a la mesa. Al final te pedimos el número de mesa.','En mesa'],
+  recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Elige la hora al confirmar.','Para recoger'],
+  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Al final te pedimos tu dirección.','Delivery']};
+function setMode(m,anim){
+  mode=m; document.body.dataset.mode=m;
+  $$('#modes button').forEach(x=>{const on=x.dataset.m===m;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
+  const [h,s,short]=MODEINFO[m], mi=$('#modeinfo');
+  mi.innerHTML=`<div class="mi">${MODEICON[m]}</div><div><b>${h}</b><span>${s}</span></div>`;
+  $('#cmode').textContent=short;
+  if(anim){mi.classList.remove('pop');void mi.offsetWidth;mi.classList.add('pop');toast('Cambiaste a: '+short)}
+  store.set('coffit_mode',m); drawCart();
+}
+$$('#modes button').forEach(b=>b.onclick=()=>{ if(b.dataset.m!==mode) setMode(b.dataset.m,true) });
+setMode(store.get('coffit_mode','mesa'),false);
 $$('#nav button').forEach(b=>b.onclick=()=>show(b.dataset.s==='menu'?(drawMenu(),'menu'):b.dataset.s));
 drawHome(); drawCart(); syncMenu();
 </script>

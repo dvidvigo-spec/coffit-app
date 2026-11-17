@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 16 nov 2026, versión V6 (conexión con Supabase).
+> Última actualización: 17 nov 2026, versión V7 (modos de pedido con color propio).
 
 ---
 
@@ -62,7 +62,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - El logo real (wordmark y sello) en base64, en el color espresso.
 
 **Pantallas:**
-- **Inicio:** modo (En mesa / Para recoger / Delivery), buscador, promo del día, grilla de 9 secciones con foto y "Lo más pedido".
+- **Inicio:** modo (En mesa / Recoger / Delivery; cada uno con su color e ícono: mesa caramelo #B98D62, recoger verde #5E7B4C, delivery azul #2F6690, más un aviso que explica el modo, una animación y un toast al cambiar; el modo se recuerda en el celular y tiñe la barra "Ver mi pedido"), buscador, promo del día, grilla de 9 secciones con foto y "Lo más pedido".
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
 - **Club:** sellos (8 sellos = café gratis; hoy solo se guardan en el celular), tortas enteras, Miércoles Coffit y pedidos corporativos.
 - **Pedido:** ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
@@ -134,9 +134,9 @@ Git está instalado en `C:\Program Files\Git`.
 - [ ] Costo por producto (para armar combos sin perder margen).
 
 **Técnicos:**
-- [ ] **Subir la V6 a GitHub:** hoy https://coffit-app.vercel.app sigue con la V5, sin Supabase. El archivo correcto ya está en `coffit-app\index.html`.
 - [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
-- [ ] Panel interno para Coffit: ver pedidos nuevos y cambiar su estado.
+- [ ] Panel interno para Coffit: ver pedidos nuevos y cambiar su estado (bosquejo enviado a David el 17 nov; resuelve también el pedido de avisar a 2 WhatsApp).
+- [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
 - [ ] Club Coffit en Supabase (sellos por celular, no en el celular del cliente).
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
 - [ ] Dominio propio (opcional) y revisar si pasar a un plan pagado de Vercel cuando haya uso comercial.
@@ -152,6 +152,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V3 | 51 fotos sacadas del PDF a máxima resolución (62 productos con foto). |
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
+| 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
 | 17 nov 2026 | — | Conector de Supabase conectado a Claude; asesor de seguridad sin alertas; primer pedido real registrado (id 2, recojo, S/ 47). |
 | 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. Publicada en Vercel y verificada. |
 

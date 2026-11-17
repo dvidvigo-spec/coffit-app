@@ -77,7 +77,8 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
 - Táper: S/ 1 por cada unidad en pedidos para recoger o delivery (no en mesa); **S/ 2 para Club sándwich y Pollo a la plancha** (regex `TAPER2`, función `tap(i)`); **toda la categoría "Bubble tea" va sin táper**. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
-- Delivery S/ 4, gratis desde S/ 45.
+- Delivery S/ 4, gratis desde S/ 45 **solo en Virú Pueblo** (se avisa en el modo Delivery y en el carrito; la app no valida la zona, la confirma el personal).
+- Los avisos de los modos (Recoger/Delivery) no mencionan los tápers; el cobro se ve solo en el carrito.
 - Combo almuerzo: plato de fondo + limonada clásica (+S/ 6, ahorra S/ 3).
 - Combo tarde: café caliente + porción de torta, S/ 22.
 - Combo antojo: wrap o sándwich + frappé 12 oz (−S/ 3).
@@ -160,6 +161,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
 | 17 nov 2026 | V9.3 | Se quitó el texto de tápers del aviso de Recoger y Delivery (el cobro sigue en el carrito). |
+| 17 nov 2026 | V9.3 | Se quitó el texto de tápers de los avisos de modo; delivery gratis desde S/ 45 solo en Virú Pueblo. |
 | 17 nov 2026 | V9.2 | Bubble tea (toda la categoría) sin táper. |
 | 17 nov 2026 | V9.1 | Táper de S/ 2 solo para Club sándwich y Pollo a la plancha. |
 | 17 nov 2026 | V9 | Táper S/ 1 por unidad en recojo y delivery: se ve en el carrito, el WhatsApp, el panel y la nueva columna `pedidos.taper`. |

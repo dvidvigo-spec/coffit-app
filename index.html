@@ -490,7 +490,7 @@ function openCart(){
   const st=subtotal(), f=fee(), w=wedOff(), ups=upsells();
   openSheet(`<h3>Tu pedido</h3>`+cart.map((i,x)=>`<div class="ln"><div><b>${i.name}</b>${i.det?`<div class="x">${i.det}</div>`:''}${i.note?`<div class="x">Nota: ${i.note}</div>`:''}${tap(i)?`<div class="x">+ Táper ${money(tap(i))} c/u${i.qty>1?' · '+money(tap(i)*i.qty):''}</div>`:''}<div class="step"><button data-d="${x}" aria-label="Quitar uno">−</button><span>${i.qty}</span><button data-u="${x}" aria-label="Agregar otro">+</button></div></div><div>${money(i.unit*i.qty)}</div></div>`).join('')+
     (ups.length?`<div class="lbl">¿Le sumas algo?</div><div class="ups">`+ups.map(m=>`<button data-up="${m.id}"><b>${m.n}</b>+ ${money(m.p)}</button>`).join('')+`</div>`:'')+
-    (mode==='delivery'?(st<FREE_FROM?`<p class="hint">Te faltan <b>${money(FREE_FROM-st)}</b> para tener delivery gratis.</p><div class="bar"><i style="width:${Math.min(100,st/FREE_FROM*100)}%"></i></div>`:`<p class="hint save">Tu delivery es gratis.</p>`):'')+
+    (mode==='delivery'?(st<FREE_FROM?`<p class="hint">Te faltan <b>${money(FREE_FROM-st)}</b> para tener delivery gratis (solo en Virú Pueblo).</p><div class="bar"><i style="width:${Math.min(100,st/FREE_FROM*100)}%"></i></div>`:`<p class="hint save">Tu delivery es gratis si estás en Virú Pueblo.</p>`):'')+
     `<div style="margin-top:14px"><div class="sum"><span>Subtotal</span><span>${money(st)}</span></div>`+
     (tapers()?`<div class="sum"><span>Tápers (${cart.reduce((s,i)=>s+(tap(i)?i.qty:0),0)})</span><span>${money(tapers())}</span></div>`:'')+
     (w?`<div class="sum save"><span>Miércoles Coffit</span><span>− ${money(w)}</span></div>`:'')+
@@ -569,7 +569,7 @@ const MODEICON={"mesa": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 9h16\"/><path d
 const MODEINFO={
   mesa:['Pedido en tu mesa','Pide desde tu celular y te lo llevamos a la mesa. Al final te pedimos el número de mesa.','En mesa'],
   recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Elige la hora al confirmar.','Para recoger'],
-  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Al final te pedimos tu dirección.','Delivery']};
+  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+' (solo en Virú Pueblo). Al final te pedimos tu dirección.','Delivery']};
 function setMode(m,anim){
   mode=m; document.body.dataset.mode=m;
   $$('#modes button').forEach(x=>{const on=x.dataset.m===m;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});

@@ -79,6 +79,8 @@ ul.items small{display:block;color:var(--muted);font-size:12.5px}
 .acts .wa{color:#128C7E}
 .acts .x{color:var(--alert)}
 .gift{margin-top:6px;background:var(--leaf);color:#fff;font-weight:800;font-size:13.5px;border-radius:10px;padding:7px 10px}
+.banner{display:block;width:calc(100% - 32px);margin:12px 16px 0;border:0;border-radius:14px;padding:14px;background:var(--alert);color:#fff;font-weight:800;font-size:16px;animation:blink 1s step-end infinite}
+@keyframes blink{50%{background:#7a2c1c}}
 .empty{color:var(--muted);text-align:center;padding:26px 8px;border:1px dashed var(--line);border-radius:14px;font-size:14px}
 .top5{padding:0 16px 30px;color:var(--muted);font-size:13px}
 </style>
@@ -115,6 +117,7 @@ ul.items small{display:block;color:var(--muted);font-size:12.5px}
     </div>
     <div class="tabs" id="tabs"></div>
   </header>
+  <button class="banner hidden" id="banner" type="button">🔔 Pedido nuevo · toca para verlo</button>
   <main class="board" id="board"></main>
   <div class="top5" id="top5"></div>
 </section>
@@ -193,19 +196,43 @@ async function setState(id,estado){
   if(error){o.estado=prev;draw();alert('No se pudo actualizar el pedido. Revisa tu conexión.')}
 }
 
-/* ---------- Alertas ---------- */
-$('#bSound').onclick=()=>{
-  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume();soundOn=true;beep();
-    $('#bSound').textContent='Alertas activas';$('#bSound').classList.remove('warn');
-    if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
-  }catch(e){}
+/* ---------- Alertas ----------
+   iPhone: el sonido sale por un <audio> (se oye aunque el celular esté en silencio),
+   se repite cada 15 s mientras haya pedidos nuevos sin aceptar, y la pantalla
+   se mantiene encendida (Wake Lock) para que el panel no se duerma. */
+function chimeURL(){ // genera un "ding-dong" WAV en memoria
+  const sr=22050, dur=1.6, n=Math.floor(sr*dur), d=new DataView(new ArrayBuffer(44+n*2));
+  const w=(o,str)=>{for(let k=0;k<str.length;k++)d.setUint8(o+k,str.charCodeAt(k))};
+  w(0,'RIFF');d.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);
+  d.setUint32(24,sr,true);d.setUint32(28,sr*2,true);d.setUint16(32,2,true);d.setUint16(34,16,true);w(36,'data');d.setUint32(40,n*2,true);
+  const notes=[[0,1318.5],[0.4,1046.5],[0.8,1318.5],[1.2,1046.5]];
+  for(let k=0;k<n;k++){const t=k/sr;let v=0;notes.forEach(([st,f])=>{const x=t-st;if(x>=0&&x<0.38)v+=Math.sin(2*Math.PI*f*x)*Math.exp(-x*7)});
+    d.setInt16(44+k*2,Math.max(-1,Math.min(1,v*0.9))*32767,true)}
+  return URL.createObjectURL(new Blob([d],{type:'audio/wav'}));
+}
+const chime=new Audio(chimeURL()); chime.preload='auto';
+let wake=null, ringTimer=null;
+async function keepAwake(){ try{ if('wakeLock' in navigator&&document.visibilityState==='visible') wake=await navigator.wakeLock.request('screen') }catch(e){} }
+$('#bSound').onclick=async()=>{
+  try{ chime.volume=1; await chime.play(); soundOn=true; }catch(e){ soundOn=false; alert('No se pudo activar el sonido. Sube el volumen del celular y vuelve a tocar.'); return }
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume()}catch(e){}
+  keepAwake();
+  $('#bSound').textContent='Alertas activas';$('#bSound').classList.remove('warn');
+  if('Notification' in window&&Notification.permission==='default')try{Notification.requestPermission()}catch(e){}
 };
-function beep(){ if(!soundOn||!ctx)return; [0,0.25,0.5].forEach(t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=t===0.25?1046:880;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.0001,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(.4,ctx.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+t+.2);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.22)}) }
+function beep(){ if(!soundOn)return; try{chime.currentTime=0;chime.play().catch(()=>{})}catch(e){} }
+function pending(){ return orders.some(o=>o.estado==='nuevo') }
+function ring(){ // repite mientras haya pedidos nuevos
+  clearInterval(ringTimer); beep();
+  ringTimer=setInterval(()=>{ if(pending()) beep(); else clearInterval(ringTimer) },15000);
+}
 function alertNew(o){
-  beep(); if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  ring(); if(navigator.vibrate)navigator.vibrate([300,150,300,150,300]);
   try{ if('Notification' in window&&Notification.permission==='granted') new Notification('Nuevo pedido Coffit',{body:`${MODE[o.modo]} · ${o.nombre} · ${money(o.total)}`}) }catch(e){}
+  $('#banner').classList.remove('hidden');
   document.title='(●) Nuevo pedido · Coffit'; setTimeout(()=>document.title='Coffit Panel de Pedidos',8000);
 }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&!$('#vApp').classList.contains('hidden')){ keepAwake(); load() } });
 
 /* ---------- Vista ---------- */
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -238,7 +265,9 @@ function draw(){
   $('#kT').textContent='S/ '+(today.length?(sum/today.length).toFixed(0):0);
   $('#kP').textContent=orders.filter(o=>['nuevo','preparando','en camino'].includes(o.estado)).length;
   const by=k=>orders.filter(o=>o.estado===k&&(k!=='entregado'||new Date(o.creado)>=start)).sort((a,b)=>k==='entregado'?new Date(b.creado)-new Date(a.creado):new Date(a.creado)-new Date(b.creado));
+  if(!pending())$('#banner').classList.add('hidden');
   $('#tabs').innerHTML=COLS.map(c=>`<button class="tab ${c.k===tab?'on':''}" data-k="${c.k}">${c.t.split(' /')[0]}<span class="c">${by(c.k).length}</span></button>`).join('');
+  $('#banner').onclick=()=>{tab='nuevo';$('#banner').classList.add('hidden');draw();scrollTo(0,0)};
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.k;draw()});
   $('#board').innerHTML=COLS.map(c=>{const L=by(c.k);return `<div class="col ${c.k===tab?'on':''}"><h2><span>${c.t}</span><span>${L.length}</span></h2>${L.length?L.map(card).join(''):`<div class="empty">${c.k==='nuevo'?'Sin pedidos nuevos. Cuando entre uno, sonará una alerta.':'Nada por aquí.'}</div>`}</div>`}).join('');
   document.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>{const id=+b.dataset.id,to=b.dataset.to; if(to==='cancelado'&&!confirm('¿Cancelar el pedido #'+id+'?'))return; fresh.delete(id); setState(id,to)});

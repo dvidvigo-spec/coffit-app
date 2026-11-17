@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.12 (acceso al panel creado; botón Mostrar contraseña).
+> Última actualización: 17 nov 2026, versión V9.13 (alertas del panel que funcionan en iPhone).
 
 ---
 
@@ -70,7 +70,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
 - **Club:** sellos (5 pedidos entregados = el 6.º café caliente gratis). La cuenta oficial la lleva el **panel**: cuenta los pedidos en estado `entregado` por celular (últimos 9 dígitos) y en cada pedido nuevo muestra "Club: sello N de 5" o el aviso verde "Le toca café caliente GRATIS". En la app del cliente los sellos solo se muestran desde su celular (aproximado), tortas enteras, Miércoles Coffit y pedidos corporativos.
 - **Pedido:** cada producto tiene botón "Eliminar" (rojo, bajo el precio) que lo quita completo y avisa con un toast; si el carrito queda vacío, la ventana se cierra. Ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
-- **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta con sonido, vibración y notificación al entrar un pedido (tocar "Activar alertas" una vez), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
+- **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta al entrar un pedido (tocar "Activar alertas" una vez): sonido "ding-dong" con un `<audio>` WAV generado en el navegador (en iPhone se oye aunque esté en silencio), que se repite cada 15 s mientras haya pedidos en "Nuevos"; franja roja parpadeante "Pedido nuevo"; pantalla siempre encendida (Wake Lock) y recarga al volver a la pestaña. Límite: con la pantalla bloqueada o el navegador cerrado no suena (para eso haría falta push con PWA), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
 - **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
 - **Botón flotante de WhatsApp** (abajo a la izquierda, con rebote).
 
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.13 | Panel: alerta sonora con `<audio>` (funciona en iPhone), repetición cada 15 s hasta aceptar, franja roja de pedido nuevo y pantalla siempre encendida. |
 | 17 nov 2026 | V9.12 | Panel: botón "Mostrar/Ocultar" contraseña, botón grande "Primera vez: crear el acceso" (sin doble toque) y cuenta coffit.cafeteria1@gmail.com creada y confirmada. |
 | 17 nov 2026 | V9.11 | Desayuno fit y Desayuno tropical: 3 tápers cada uno. |
 | 17 nov 2026 | V9.10 | Tápers por producto: desayuno al paso 2, americano 3, criollo 4, del bosque 4, Coffit 4, clásico 1 (club sándwich y pollo a la plancha siguen en 2). |

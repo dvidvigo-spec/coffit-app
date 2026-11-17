@@ -172,6 +172,7 @@ textarea,.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:1
 .hint{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45}
 .ln{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .ln .x{font-size:12.5px;color:var(--muted);margin-top:2px}
+.done{text-align:center;padding:6px 0 4px}.done .ok{width:64px;height:64px;margin:4px auto 10px;border-radius:50%;background:var(--leaf);color:#fff;font-size:34px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .ln .rt{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px;flex:none}
 .del{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--alert);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .ln .step{background:var(--caramel-soft);color:var(--espresso);margin-top:6px}
@@ -563,7 +564,14 @@ function checkout(){
     saveOrder({token:tok,modo:mode,nombre:v('nom'),celular:v('cel'),mesa:v('mesa')||null,hora_recojo:v('hora')||null,direccion:v('dir')||null,referencia:v('ref')||null,ubicacion:loc,pago:pay,paga_con:v('vu')||null,subtotal:subtotal(),taper:tapers(),delivery:fee(),descuento:wedOff(),total:total(),items:cart.map(i=>({id:i.ref,nombre:i.name,detalle:i.det,nota:i.note,precio:i.unit,cantidad:i.qty}))});
     const url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
     store.set('coffit_last',cart); store.set('coffit_stamps',store.get('coffit_stamps',0)+1);
-    $('#msg').innerHTML='Si WhatsApp no se abrió, <a href="'+url+'" target="_blank" rel="noopener">toca aquí para enviarlo</a>.';
+    // Pedido enviado: se vacía el carrito y la ventana pasa a una confirmación
+    cart.length=0; drawCart(); refresh();
+    openSheet(`<div class="done"><div class="ok">✓</div><h3>¡Pedido enviado!</h3>
+      <p class="lead">Solo falta que toques <b>Enviar</b> en WhatsApp para confirmarlo con Coffit.</p>
+      <p class="lead">En Inicio verás en vivo cuando tu pedido se esté preparando y cuando esté listo.</p>
+      <div class="qrow"><button class="cta" id="seeTrack">Ver mi pedido</button></div>
+      <p class="hint">¿No se abrió WhatsApp? <a href="${url}" target="_blank" rel="noopener">Toca aquí para enviarlo</a>.</p></div>`);
+    $('#seeTrack').onclick=()=>{closeSheet();show('home');pollTrack()};
     const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
   };
 }
@@ -616,7 +624,13 @@ async function pollTrack(){
     if(!done&&!cx) trackTimer=setTimeout(pollTrack,8000);
   }catch(e){ trackTimer=setTimeout(pollTrack,15000) }
 }
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')pollTrack() });
+let ver=null; // si se publicó una versión nueva, recarga sola (sin perder un pedido a medias)
+async function checkVersion(){
+  try{ const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}); const v=r.headers.get('etag')||r.headers.get('last-modified');
+    if(!v)return; if(ver&&v!==ver&&!cart.length&&!$('#sheet').classList.contains('open')){location.reload();return} ver=v }catch(e){}
+}
+checkVersion();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){pollTrack();checkVersion()} });
 
 /* ---------- Club ---------- */
 function drawClub(){

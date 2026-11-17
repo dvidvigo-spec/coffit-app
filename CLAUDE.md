@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10 (seguimiento del pedido para el cliente).
+> Última actualización: 17 nov 2026, versión V10.1 (confirmación tras enviar y recarga automática de versiones).
 
 ---
 
@@ -71,7 +71,8 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Inicio:** modo (En mesa / Recoger / Delivery; cada uno con su color e ícono: mesa caramelo #B98D62, recoger verde #5E7B4C, delivery azul #2F6690, más un aviso que explica el modo, una animación y un toast al cambiar; el modo se recuerda en el celular y tiñe la barra "Ver mi pedido"), buscador, promo del día, grilla de 9 secciones con foto y "Lo más pedido".
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
 - **Club:** sellos (5 pedidos entregados = el 6.º café caliente gratis). La cuenta oficial la lleva el **panel**: cuenta los pedidos en estado `entregado` por celular (últimos 9 dígitos) y en cada pedido nuevo muestra "Club: sello N de 5" o el aviso verde "Le toca café caliente GRATIS". En la app del cliente los sellos solo se muestran desde su celular (aproximado), tortas enteras, Miércoles Coffit y pedidos corporativos.
-- **Pedido:** cada producto tiene botón "Eliminar" (rojo, bajo el precio) que lo quita completo y avisa con un toast; si el carrito queda vacío, la ventana se cierra. Ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
+- **Pedido:** cada producto tiene botón "Eliminar" (rojo, bajo el precio) que lo quita completo y avisa con un toast; si el carrito queda vacío, la ventana se cierra. Ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta), se abre WhatsApp con el pedido, **se vacía el carrito** y la ventana pasa a "¡Pedido enviado!" con el botón "Ver mi pedido" (lleva a Inicio con la tarjeta de seguimiento) y un enlace por si WhatsApp no se abrió.
+- **Versión nueva automática:** la app compara el ETag de la página al abrirse y al volver a la pestaña; si hay una versión publicada más nueva, recarga sola (solo si el carrito está vacío y no hay ventana abierta). Así los celulares con la pestaña vieja no se quedan sin las mejoras.
 - **Seguimiento del pedido (cliente):** al enviar, la app guarda el token en el celular (`coffit_track`) y en Inicio muestra una tarjeta "Tu pedido #N" con barra de 4 pasos (Recibido → Preparando → Listo para recoger / En camino / Listo → Entregado/Servido). Consulta `estado_pedido` cada 8 s y al volver a la app; avisa con toast y vibración cuando cambia. Se oculta tras 12 h o con "Ocultar" al terminar.
 - **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta al entrar un pedido (tocar "Activar alertas" una vez): sonido "ding-dong" con un `<audio>` WAV generado en el navegador (en iPhone se oye aunque esté en silencio), que se repite cada 3 s mientras haya pedidos en "Nuevos"; franja roja parpadeante "Pedido nuevo"; pantalla siempre encendida (Wake Lock) y recarga al volver a la pestaña. Límite: con la pantalla bloqueada o el navegador cerrado no suena (para eso haría falta push con PWA), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
 - **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
@@ -165,6 +166,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V10.1 | Tras enviar el pedido: carrito vacío y pantalla "¡Pedido enviado!" en vez del formulario. La app se recarga sola cuando hay versión nueva (el pedido #12 se hizo desde una pestaña vieja sin seguimiento). |
 | 17 nov 2026 | V10 | Seguimiento del pedido para el cliente (tarjeta en Inicio con el estado en vivo), columna `pedidos.token` y función `estado_pedido`. En el panel, el botón WhatsApp lleva un mensaje según el estado (preparando / listo para recoger / en camino) y el botón "Listo" pasa a "Listo / Enviar". |
 | 17 nov 2026 | V9.14 | Panel: el sonido de pedido nuevo se repite cada 3 s hasta aceptar. |
 | 17 nov 2026 | V9.13 | Panel: alerta sonora con `<audio>` (funciona en iPhone), repetición cada 15 s hasta aceptar (luego 3 s), franja roja de pedido nuevo y pantalla siempre encendida. |

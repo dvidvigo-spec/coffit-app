@@ -161,6 +161,8 @@ textarea,.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:1
 .hint{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45}
 .ln{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .ln .x{font-size:12.5px;color:var(--muted);margin-top:2px}
+.ln .rt{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px;flex:none}
+.del{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--alert);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .ln .step{background:var(--caramel-soft);color:var(--espresso);margin-top:6px}
 .ln .step button{color:var(--espresso);width:32px;height:32px}
 .ups{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
@@ -490,7 +492,7 @@ function upsells(){
 function openCart(){
   if(!cart.length){openSheet(`<h3>Tu pedido está vacío</h3><p class="lead">Elige algo de la carta para empezar.</p><div class="qrow"><button class="cta" id="gm">Ver la carta</button></div>`);$('#gm').onclick=()=>{closeSheet();openGroup('top')};return}
   const st=subtotal(), f=fee(), w=wedOff(), ups=upsells();
-  openSheet(`<h3>Tu pedido</h3>`+cart.map((i,x)=>`<div class="ln"><div><b>${i.name}</b>${i.det?`<div class="x">${i.det}</div>`:''}${i.note?`<div class="x">Nota: ${i.note}</div>`:''}${tap(i)?`<div class="x">+ Táper ${money(tap(i))} c/u${i.qty>1?' · '+money(tap(i)*i.qty):''}</div>`:''}<div class="step"><button data-d="${x}" aria-label="Quitar uno">−</button><span>${i.qty}</span><button data-u="${x}" aria-label="Agregar otro">+</button></div></div><div>${money(i.unit*i.qty)}</div></div>`).join('')+
+  openSheet(`<h3>Tu pedido</h3>`+cart.map((i,x)=>`<div class="ln"><div><b>${i.name}</b>${i.det?`<div class="x">${i.det}</div>`:''}${i.note?`<div class="x">Nota: ${i.note}</div>`:''}${tap(i)?`<div class="x">+ Táper ${money(tap(i))} c/u${i.qty>1?' · '+money(tap(i)*i.qty):''}</div>`:''}<div class="step"><button data-d="${x}" aria-label="Quitar uno">−</button><span>${i.qty}</span><button data-u="${x}" aria-label="Agregar otro">+</button></div></div><div class="rt"><div>${money(i.unit*i.qty)}</div><button class="del" data-del="${x}" aria-label="Eliminar ${i.name}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Eliminar</button></div></div>`).join('')+
     (ups.length?`<div class="lbl">¿Le sumas algo?</div><div class="ups">`+ups.map(m=>`<button data-up="${m.id}"><b>${m.n}</b>+ ${money(m.p)}</button>`).join('')+`</div>`:'')+
     (mode==='delivery'?(st<FREE_FROM?`<p class="hint">Te faltan <b>${money(FREE_FROM-st)}</b> para tener delivery gratis (solo en Virú Pueblo).</p><div class="bar"><i style="width:${Math.min(100,st/FREE_FROM*100)}%"></i></div>`:`<p class="hint save">Tu delivery es gratis si estás en Virú Pueblo.</p>`):'')+
     `<div style="margin-top:14px"><div class="sum"><span>Subtotal</span><span>${money(st)}</span></div>`+
@@ -500,6 +502,7 @@ function openCart(){
     `<div class="sum t"><span>Total</span><span>${money(total())}</span></div></div>`+
     `<div class="qrow"><button class="cta" id="next">Continuar</button></div>`);
   $$('#sc [data-d]').forEach(b=>b.onclick=()=>{const i=cart[b.dataset.d];i.qty--;if(!i.qty)cart.splice(b.dataset.d,1);drawCart();refresh();openCart()});
+  $$('#sc [data-del]').forEach(b=>b.onclick=()=>{const it=cart[b.dataset.del];cart.splice(b.dataset.del,1);drawCart();refresh();toast('Quitaste: '+it.name);if(cart.length)openCart();else closeSheet()});
   $$('#sc [data-u]').forEach(b=>b.onclick=()=>{cart[b.dataset.u].qty++;drawCart();refresh();openCart()});
   $$('#sc [data-up]').forEach(b=>b.onclick=()=>{const m=byId(b.dataset.up);addToCart({ref:m.id,name:m.n,cat:m.c,det:m.l&&m.c!=='Postres'?'12 oz':(m.c==='Postres'&&m.l?'Porción':''),note:'',unit:m.p,qty:1});refresh();openCart()});
   $('#next').onclick=checkout;

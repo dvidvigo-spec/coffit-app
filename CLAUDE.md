@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.8 (Club Coffit de 5 sellos, contado por celular en el panel).
+> Última actualización: 17 nov 2026, versión V9.9 (botón Eliminar en el carrito).
 
 ---
 
@@ -69,7 +69,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Inicio:** modo (En mesa / Recoger / Delivery; cada uno con su color e ícono: mesa caramelo #B98D62, recoger verde #5E7B4C, delivery azul #2F6690, más un aviso que explica el modo, una animación y un toast al cambiar; el modo se recuerda en el celular y tiñe la barra "Ver mi pedido"), buscador, promo del día, grilla de 9 secciones con foto y "Lo más pedido".
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
 - **Club:** sellos (5 pedidos entregados = el 6.º café caliente gratis). La cuenta oficial la lleva el **panel**: cuenta los pedidos en estado `entregado` por celular (últimos 9 dígitos) y en cada pedido nuevo muestra "Club: sello N de 5" o el aviso verde "Le toca café caliente GRATIS". En la app del cliente los sellos solo se muestran desde su celular (aproximado), tortas enteras, Miércoles Coffit y pedidos corporativos.
-- **Pedido:** ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
+- **Pedido:** cada producto tiene botón "Eliminar" (rojo, bajo el precio) que lo quita completo y avisa con un toast; si el carrito queda vacío, la ventana se cierra. Ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
 - **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta con sonido, vibración y notificación al entrar un pedido (tocar "Activar alertas" una vez), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
 - **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
 - **Botón flotante de WhatsApp** (abajo a la izquierda, con rebote).
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.9 | Botón "Eliminar" bajo el precio de cada producto en "Tu pedido". |
 | 17 nov 2026 | V9.8 | Club Coffit pasa a 5 sellos (6.º café caliente gratis); el panel cuenta los pedidos entregados por celular y avisa cuando toca el café gratis. |
 | 17 nov 2026 | V9.7 | Combo tarde: vuelven latte, americano y mocaccino (más capuccino e iced americano); se quitó el tiramisú y entró el cheesecake de maracuyá. |
 | 17 nov 2026 | V9.6 | Botón X arriba a la derecha para cerrar cualquier ventana (producto, combo, carrito, datos). |

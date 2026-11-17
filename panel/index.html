@@ -209,7 +209,7 @@ function card(o){
     <div class="pay">${esc(o.pago||'')}${o.paga_con?' · paga con S/ '+esc(o.paga_con):''}${Number(o.taper)>0?' · tápers '+money(o.taper):''}${Number(o.delivery)>0?' · incluye delivery '+money(o.delivery):''}${Number(o.descuento)>0?' · descuento '+money(o.descuento):''}</div>
     <div class="acts">
       ${col.next?`<button class="go" data-id="${o.id}" data-to="${col.next}">${col.go}</button>`:''}
-      <a class="wa" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
+      ${o.ubicacion?`<a href="${esc(o.ubicacion)}" target="_blank" rel="noopener">Mapa</a>`:''}<a class="wa" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
       ${o.estado!=='entregado'?`<button class="x" data-id="${o.id}" data-to="cancelado" aria-label="Cancelar pedido">Cancelar</button>`:''}
     </div></div>`;
 }

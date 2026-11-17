@@ -296,7 +296,7 @@ const TOPSET = new Set(TOP);
 // Combos nuevos (propuesta, precios por validar)
 const COMBOS = [
   {n:'Combo almuerzo', d:'Plato de fondo + limonada clásica. Ahorras S/ 3.', pick:['Pasta a la bolognesa','Pollo a la plancha','Chicken katsu','Pasta al pesto','Lomo saltado'], incl:'Limonada clásica', extra:6, g:'🍛', pk:'chicken-katsu'},
-  {n:'Combo tarde', d:'Café caliente + porción de torta, a S/ 22.', pick:['Capuccino','Latte','Americano','Mocaccino'], pick2:['Torta de chocolate','Torta de tres leches','Cheesecake de fresa','Tiramisú','Pie de limón'], fixed:22, g:'☕', pk:'torta-de-chocolate'},
+  {n:'Combo tarde', d:'Capuccino o iced americano + porción de torta, a S/ 22.', pick:['Capuccino','Iced americano'], pick2:['Torta de chocolate','Torta de tres leches','Cheesecake de fresa','Tiramisú','Pie de limón'], fixed:22, g:'☕', pk:'torta-de-chocolate'},
   {n:'Combo antojo', d:'Wrap o sándwich + frappé 12 oz. Ahorras S/ 3.', pick:['Wrap de pollo','Wrap chicken crispy','Chicken peach','Pollito al horno','Sándwich con lomo'], pick2:['Frapuccino de caramel','Frapuccino de mocca','Frappé de oreo','Frappé de fresa'], save:3, g:'🥤', pk:'wrap-chicken-crispy'},
 ];
 COMBOS.forEach((c,i)=>{c.id=1000+i;c.c='Combos nuevos';c.combo=true;c.p=comboPrice(c,0,0);c.from=!c.fixed});
@@ -308,7 +308,7 @@ const byId = id => ALL.find(m=>m.id==id);
 const PROMOS = {
   0:['Domingo','Una torta entera para la familia','Desde S/ 55, con 24 h de anticipación.','postres'],
   1:['Lunes','Combo almuerzo','Plato de fondo + limonada, ahorras S/ 3.','combos'],
-  2:['Martes','Combo tarde a S/ 22','Café caliente + porción de torta.','combos'],
+  2:['Martes','Combo tarde a S/ 22','Capuccino o iced americano + porción de torta.','combos'],
   3:['Miércoles Coffit','2.º frappé de 12 oz a mitad de precio','Solo pidiendo por aquí, todo el día.','frias'],
   4:['Jueves','Combo antojo','Wrap o sándwich + frappé, ahorras S/ 3.','combos'],
   5:['Viernes','Para compartir en la mesa','Tequeños, deditos y club sándwich.','sandwiches'],
@@ -505,25 +505,33 @@ function openCart(){
 const refresh=()=>{ if($('#s-menu').classList.contains('on'))drawMenu() };
 
 function checkout(){
-  const s=store.get('coffit_client',{}); let pay='Yape o Plin';
+  const s=store.get('coffit_client',{}); let pay='Yape o Plin', loc=null;
   const extra={mesa:`<div class="lbl">Número de mesa</div><input class="f" id="mesa" inputmode="numeric" placeholder="Ej.: 4">`,
     recojo:`<div class="lbl">¿A qué hora pasas? <small>· opcional</small></div><input class="f" id="hora" type="time">`,
-    delivery:`<div class="lbl">Dirección en Virú</div><input class="f" id="dir" placeholder="Calle y número" value="${s.dir||''}"><div class="lbl">Referencia <small>· opcional</small></div><input class="f" id="ref" placeholder="Ej.: frente al parque" value="${s.ref||''}">`}[mode];
+    delivery:`<div class="lbl">Dirección exacta</div><input class="f" id="dir" placeholder="Calle, número, Mz/Lote, sector" value="${s.dir||''}">`+
+      `<button class="opt" id="geo" type="button"><span>📍 Compartir mi ubicación actual</span><span class="r"></span></button><p class="hint" id="geomsg">Así el repartidor llega directo. Tu celular te pedirá permiso.</p>`+
+      `<div class="lbl">Referencia <small>· opcional</small></div><input class="f" id="ref" placeholder="Ej.: frente al parque" value="${s.ref||''}">`}[mode];
   openSheet(`<h3>Confirma tus datos</h3><p class="lead">${{mesa:'Pedido en mesa',recojo:'Para recoger en Calle Libertad 316',delivery:'Delivery en Virú'}[mode]} · Total ${money(total())}</p>`+
     `<div class="lbl">Nombre</div><input class="f" id="nom" value="${s.nom||''}" placeholder="Tu nombre" autocomplete="name">`+
     `<div class="lbl">Celular</div><input class="f" id="cel" inputmode="tel" value="${s.cel||''}" placeholder="9XX XXX XXX" autocomplete="tel">`+extra+
     `<div class="lbl">Pago</div><button class="opt on" data-p="Yape o Plin"><span>Yape o Plin</span><span class="r"></span></button><button class="opt" data-p="Efectivo"><span>Efectivo</span><span class="r"></span></button>`+
     `<div id="cash" hidden><div class="lbl">¿Con cuánto pagas?</div><input class="f" id="vu" inputmode="decimal" placeholder="Ej.: 50"></div>`+
     `<div class="qrow"><button class="cta go" id="send">Enviar pedido por WhatsApp</button></div><p class="hint" id="msg">Se abre WhatsApp con tu pedido listo para enviar a Coffit (944 667 516).</p>`);
+  const g=$('#geo'); if(g)g.onclick=()=>{
+    if(!navigator.geolocation){$('#geomsg').textContent='Tu celular no permite compartir la ubicación. Escribe bien la dirección y una referencia.';return}
+    $('#geomsg').textContent='Buscando tu ubicación…';
+    navigator.geolocation.getCurrentPosition(p=>{loc='https://maps.google.com/?q='+p.coords.latitude.toFixed(6)+','+p.coords.longitude.toFixed(6);g.classList.add('on');g.firstChild.textContent='📍 Ubicación compartida';$('#geomsg').innerHTML='Ubicación lista. <a href="'+loc+'" target="_blank" rel="noopener">Ver en el mapa</a>'},
+      ()=>{$('#geomsg').textContent='No pudimos obtener tu ubicación. Revisa el permiso de ubicación o escribe bien la dirección y una referencia.'},{enableHighAccuracy:true,timeout:15000});
+  };
   $$('#sc [data-p]').forEach(b=>b.onclick=()=>{pay=b.dataset.p;$$('#sc [data-p]').forEach(x=>x.classList.toggle('on',x===b));$('#cash').hidden=pay!=='Efectivo'});
   $('#send').onclick=()=>{
     const v=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
     if(!v('nom')||!v('cel')){$('#msg').innerHTML='<b style="color:var(--alert)">Escribe tu nombre y tu celular para enviar el pedido.</b>';return}
-    if(mode==='delivery'&&!v('dir')){$('#msg').innerHTML='<b style="color:var(--alert)">Escribe la dirección de entrega.</b>';return}
+    if(mode==='delivery'&&v('dir').length<8){$('#msg').innerHTML='<b style="color:var(--alert)">Escribe tu dirección exacta: calle, número o Mz/Lote.</b>';return}
     if(mode==='mesa'&&!v('mesa')){$('#msg').innerHTML='<b style="color:var(--alert)">Escribe el número de tu mesa.</b>';return}
     store.set('coffit_client',{nom:v('nom'),cel:v('cel'),dir:v('dir'),ref:v('ref')});
     const L=['*Nuevo pedido Coffit*',{mesa:'Mesa '+v('mesa'),recojo:'Para recoger'+(v('hora')?' a las '+v('hora'):''),delivery:'Delivery'}[mode],v('nom')+' · '+v('cel')];
-    if(mode==='delivery')L.push(v('dir')+(v('ref')?' ('+v('ref')+')':''));
+    if(mode==='delivery'){L.push(v('dir')+(v('ref')?' ('+v('ref')+')':''));if(loc)L.push('Ubicación: '+loc)}
     L.push('');
     cart.forEach(i=>{L.push(`${i.qty} x ${i.name} — ${money(i.unit*i.qty)}`);if(i.det)L.push('   '+i.det);if(i.note)L.push('   Nota: '+i.note);if(tap(i))L.push('   + Táper '+money(tap(i)*i.qty))});
     L.push('');
@@ -531,7 +539,7 @@ function checkout(){
     if(wedOff())L.push('Miércoles Coffit: − '+money(wedOff()));
     if(mode==='delivery')L.push('Delivery: '+(fee()?money(fee()):'gratis'));
     L.push('*Total: '+money(total())+'*','Pago: '+pay+(pay==='Efectivo'&&v('vu')?' (paga con S/ '+v('vu')+')':''));
-    saveOrder({modo:mode,nombre:v('nom'),celular:v('cel'),mesa:v('mesa')||null,hora_recojo:v('hora')||null,direccion:v('dir')||null,referencia:v('ref')||null,pago:pay,paga_con:v('vu')||null,subtotal:subtotal(),taper:tapers(),delivery:fee(),descuento:wedOff(),total:total(),items:cart.map(i=>({id:i.ref,nombre:i.name,detalle:i.det,nota:i.note,precio:i.unit,cantidad:i.qty}))});
+    saveOrder({modo:mode,nombre:v('nom'),celular:v('cel'),mesa:v('mesa')||null,hora_recojo:v('hora')||null,direccion:v('dir')||null,referencia:v('ref')||null,ubicacion:loc,pago:pay,paga_con:v('vu')||null,subtotal:subtotal(),taper:tapers(),delivery:fee(),descuento:wedOff(),total:total(),items:cart.map(i=>({id:i.ref,nombre:i.name,detalle:i.det,nota:i.note,precio:i.unit,cantidad:i.qty}))});
     const url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
     store.set('coffit_last',cart); store.set('coffit_stamps',store.get('coffit_stamps',0)+1);
     $('#msg').innerHTML='Si WhatsApp no se abrió, <a href="'+url+'" target="_blank" rel="noopener">toca aquí para enviarlo</a>.';

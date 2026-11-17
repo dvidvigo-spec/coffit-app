@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.4 (delivery gratis solo en Virú Pueblo).
+> Última actualización: 17 nov 2026, versión V9.5 (ubicación en delivery; combo tarde con capuccino o iced americano).
 
 ---
 
@@ -43,7 +43,7 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 `id int PK · categoria · nombre · precio numeric · precio_grande numeric (16 oz o torta entera) · descripcion · orden · activo bool · actualizado`
 
 **`public.pedidos`**: cada pedido enviado desde la app.
-`id identity · creado · modo ('mesa'|'recojo'|'delivery') · nombre · celular · mesa · hora_recojo · direccion · referencia · pago · paga_con · subtotal · taper · delivery · descuento · total · items jsonb [{id,nombre,detalle,nota,precio,cantidad}] · estado ('nuevo'|'preparando'|'en camino'|'entregado'|'cancelado')`
+`id identity · creado · modo ('mesa'|'recojo'|'delivery') · nombre · celular · mesa · hora_recojo · direccion · referencia · ubicacion (link de Google Maps, opcional) · pago · paga_con · subtotal · taper · delivery · descuento · total · items jsonb [{id,nombre,detalle,nota,precio,cantidad}] · estado ('nuevo'|'preparando'|'en camino'|'entregado'|'cancelado')`
 
 **Seguridad (RLS activado):**
 - `productos`: la clave anónima puede leer solo los productos con `activo = true`.
@@ -78,9 +78,10 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
 - Táper: S/ 1 por cada unidad en pedidos para recoger o delivery (no en mesa); **S/ 2 para Club sándwich y Pollo a la plancha** (regex `TAPER2`, función `tap(i)`); **toda la categoría "Bubble tea" va sin táper**. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
 - Delivery S/ 4, gratis desde S/ 45 **solo en Virú Pueblo** (se avisa en el modo Delivery y en el carrito; la app no valida la zona, la confirma el personal).
+- Delivery: se pide dirección exacta (calle, número o Mz/Lote, sector; mínimo 8 caracteres) y un botón opcional "Compartir mi ubicación actual" (GPS del celular) que agrega un link de Google Maps al WhatsApp, a `pedidos.ubicacion` y al botón "Mapa" del panel.
 - Los avisos de los modos (Recoger/Delivery) no mencionan los tápers; el cobro se ve solo en el carrito.
 - Combo almuerzo: plato de fondo + limonada clásica (+S/ 6, ahorra S/ 3).
-- Combo tarde: café caliente + porción de torta, S/ 22.
+- Combo tarde (promo del martes): capuccino o iced americano + porción de torta, S/ 22.
 - Combo antojo: wrap o sándwich + frappé 12 oz (−S/ 3).
 - Promo por día; el miércoles, el 2.º frappé de 12 oz sale a mitad de precio (se calcula sola en el carrito).
 - Agregados: 16 oz, versión fría +2, helado +3, fruta +1, masa madre +2, papas +2, adicionales +1, extra carne +8, matcha +3, jarabes +2.
@@ -160,6 +161,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.5 | Delivery: dirección exacta obligatoria y botón para compartir la ubicación (columna `pedidos.ubicacion`, botón Mapa en el panel). Combo tarde: capuccino o iced americano + torta, S/ 22. |
 | 17 nov 2026 | V9.4 | Delivery gratis desde S/ 45 solo en Virú Pueblo (aviso del modo Delivery y carrito). |
 | 17 nov 2026 | V9.3 | Se quitó el texto de tápers del aviso de Recoger y Delivery (el cobro sigue en el carrito). |
 | 17 nov 2026 | V9.2 | Bubble tea (toda la categoría) sin táper. |

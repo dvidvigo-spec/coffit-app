@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.6 (botón X para cerrar las ventanas).
+> Última actualización: 17 nov 2026, versión V9.7 (combo tarde con 5 cafés y tortas de precio similar).
 
 ---
 
@@ -82,7 +82,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - Delivery: se pide dirección exacta (calle, número o Mz/Lote, sector; mínimo 8 caracteres) y un botón opcional "Compartir mi ubicación actual" (GPS del celular) que agrega un link de Google Maps al WhatsApp, a `pedidos.ubicacion` y al botón "Mapa" del panel.
 - Los avisos de los modos (Recoger/Delivery) no mencionan los tápers; el cobro se ve solo en el carrito.
 - Combo almuerzo: plato de fondo + limonada clásica (+S/ 6, ahorra S/ 3).
-- Combo tarde (promo del martes): capuccino o iced americano + porción de torta, S/ 22.
+- Combo tarde (promo del martes), S/ 22: café a elegir (capuccino, latte, americano, mocaccino o iced americano) + porción de torta (chocolate, tres leches, cheesecake de fresa, cheesecake de maracuyá o pie de limón; sin tiramisú por precio).
 - Combo antojo: wrap o sándwich + frappé 12 oz (−S/ 3).
 - Promo por día; el miércoles, el 2.º frappé de 12 oz sale a mitad de precio (se calcula sola en el carrito).
 - Agregados: 16 oz, versión fría +2, helado +3, fruta +1, masa madre +2, papas +2, adicionales +1, extra carne +8, matcha +3, jarabes +2.
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.7 | Combo tarde: vuelven latte, americano y mocaccino (más capuccino e iced americano); se quitó el tiramisú y entró el cheesecake de maracuyá. |
 | 17 nov 2026 | V9.6 | Botón X arriba a la derecha para cerrar cualquier ventana (producto, combo, carrito, datos). |
 | 17 nov 2026 | V9.5 | Delivery: dirección exacta obligatoria y botón para compartir la ubicación (columna `pedidos.ubicacion`, botón Mapa en el panel). Combo tarde: capuccino o iced americano + torta, S/ 22. |
 | 17 nov 2026 | V9.4 | Delivery gratis desde S/ 45 solo en Virú Pueblo (aviso del modo Delivery y carrito). |

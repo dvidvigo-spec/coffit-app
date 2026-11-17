@@ -297,7 +297,7 @@ const TOPSET = new Set(TOP);
 // Combos nuevos (propuesta, precios por validar)
 const COMBOS = [
   {n:'Combo almuerzo', d:'Plato de fondo + limonada clásica. Ahorras S/ 3.', pick:['Pasta a la bolognesa','Pollo a la plancha','Chicken katsu','Pasta al pesto','Lomo saltado'], incl:'Limonada clásica', extra:6, g:'🍛', pk:'chicken-katsu'},
-  {n:'Combo tarde', d:'Capuccino o iced americano + porción de torta, a S/ 22.', pick:['Capuccino','Iced americano'], pick2:['Torta de chocolate','Torta de tres leches','Cheesecake de fresa','Tiramisú','Pie de limón'], fixed:22, g:'☕', pk:'torta-de-chocolate'},
+  {n:'Combo tarde', d:'Café a elegir + porción de torta, a S/ 22.', lbl:'tu café', pick:['Capuccino','Latte','Americano','Mocaccino','Iced americano'], pick2:['Torta de chocolate','Torta de tres leches','Cheesecake de fresa','Cheesecake de maracuyá','Pie de limón'], fixed:22, g:'☕', pk:'torta-de-chocolate'},
   {n:'Combo antojo', d:'Wrap o sándwich + frappé 12 oz. Ahorras S/ 3.', pick:['Wrap de pollo','Wrap chicken crispy','Chicken peach','Pollito al horno','Sándwich con lomo'], pick2:['Frapuccino de caramel','Frapuccino de mocca','Frappé de oreo','Frappé de fresa'], save:3, g:'🥤', pk:'wrap-chicken-crispy'},
 ];
 COMBOS.forEach((c,i)=>{c.id=1000+i;c.c='Combos nuevos';c.combo=true;c.p=comboPrice(c,0,0);c.from=!c.fixed});
@@ -309,7 +309,7 @@ const byId = id => ALL.find(m=>m.id==id);
 const PROMOS = {
   0:['Domingo','Una torta entera para la familia','Desde S/ 55, con 24 h de anticipación.','postres'],
   1:['Lunes','Combo almuerzo','Plato de fondo + limonada, ahorras S/ 3.','combos'],
-  2:['Martes','Combo tarde a S/ 22','Capuccino o iced americano + porción de torta.','combos'],
+  2:['Martes','Combo tarde a S/ 22','Capuccino, latte, americano o iced americano + porción de torta.','combos'],
   3:['Miércoles Coffit','2.º frappé de 12 oz a mitad de precio','Solo pidiendo por aquí, todo el día.','frias'],
   4:['Jueves','Combo antojo','Wrap o sándwich + frappé, ahorras S/ 3.','combos'],
   5:['Viernes','Para compartir en la mesa','Tequeños, deditos y club sándwich.','sandwiches'],
@@ -449,7 +449,7 @@ function openCombo(c){
   let a=0,b=0;
   const draw=()=>{
     openSheet(`<div class="hero">${vis(c)}</div><h3>${c.n}</h3><p class="lead">${c.d}</p>`+
-      `<div class="lbl">Elige tu ${c.pick2?'principal':'plato'}</div>`+c.pick.map((n,i)=>`<button class="opt ${a===i?'on':''}" data-a="${i}"><span>${n}</span><span class="r">${c.fixed?'':money(comboPrice(c,i,b))}</span></button>`).join('')+
+      `<div class="lbl">Elige ${c.lbl||(c.pick2?'tu principal':'tu plato')}</div>`+c.pick.map((n,i)=>`<button class="opt ${a===i?'on':''}" data-a="${i}"><span>${n}</span><span class="r">${c.fixed?'':money(comboPrice(c,i,b))}</span></button>`).join('')+
       (c.pick2?`<div class="lbl">Y para acompañar</div>`+c.pick2.map((n,i)=>`<button class="opt ${b===i?'on':''}" data-b="${i}"><span>${n}</span></button>`).join(''):`<div class="lbl">Incluye</div><div class="opt on"><span>${c.incl}</span><span class="r">incluida</span></div>`)+
       `<div class="qrow"><button class="cta" id="addb">Agregar combo · ${money(comboPrice(c,a,b))}</button></div>`);
     $$('#sc [data-a]').forEach(x=>x.onclick=()=>{a=+x.dataset.a;draw()});

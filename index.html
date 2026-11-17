@@ -142,6 +142,7 @@ nav.bn .bd{position:absolute;top:4px;left:calc(50% + 6px);background:var(--alert
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--paper);border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;transform:translateY(105%);transition:transform .24s ease;padding:10px 18px calc(18px + env(safe-area-inset-bottom))}
 .sheet.open{transform:none}
 .sheet .in{max-width:520px;margin:0 auto}
+.xclose{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:0 0 -44px auto;border:0;border-radius:50%;background:rgba(255,255,255,.94);color:var(--espresso);box-shadow:0 2px 10px rgba(42,29,22,.18);cursor:pointer}
 .grab{width:44px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 14px}
 .sheet h3{font-family:var(--display);font-weight:400;font-size:28px;margin:0;text-wrap:balance}
 .sheet .hero{height:120px;border-radius:16px;background:var(--caramel-soft);display:flex;align-items:center;justify-content:center;font-size:54px;margin-bottom:14px}
@@ -260,7 +261,7 @@ textarea,.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:1
 </div></div>
 
 <div class="veil" id="veil"></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="in"><div class="grab"></div><div id="sc"></div></div></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="in"><button class="xclose" id="xclose" type="button" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="grab"></div><div id="sc"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -409,6 +410,7 @@ function quickAdd(m){ addToCart({ref:m.id,name:m.n,cat:m.c,det:'',note:'',unit:m
 
 /* ---------- Hoja de producto ---------- */
 function openSheet(html){$('#sc').innerHTML=html;$('#veil').style.display='block';requestAnimationFrame(()=>$('#sheet').classList.add('open'))}
+$('#xclose').onclick=()=>closeSheet();
 function closeSheet(){$('#sheet').classList.remove('open');setTimeout(()=>$('#veil').style.display='none',220)}
 $('#veil').onclick=closeSheet;
 

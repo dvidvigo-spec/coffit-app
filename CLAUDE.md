@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.5 (ubicación en delivery; combo tarde con capuccino o iced americano).
+> Última actualización: 17 nov 2026, versión V9.6 (botón X para cerrar las ventanas).
 
 ---
 
@@ -71,6 +71,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Club:** sellos (8 sellos = café gratis; hoy solo se guardan en el celular), tortas enteras, Miércoles Coffit y pedidos corporativos.
 - **Pedido:** ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
 - **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta con sonido, vibración y notificación al entrar un pedido (tocar "Activar alertas" una vez), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
+- **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
 - **Botón flotante de WhatsApp** (abajo a la izquierda, con rebote).
 
 **Diseño:** color caramelo #B98D62 (protagonista), espresso #2A1D16 (texto y botones), leche #FBF7F2 (fondo) y verde hoja #5E7B4C (solo para ahorro, pedido y logros). Fuentes Marcellus (títulos) y Figtree (texto). Se piensa primero en el celular, con botones de al menos 44 px.
@@ -161,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.6 | Botón X arriba a la derecha para cerrar cualquier ventana (producto, combo, carrito, datos). |
 | 17 nov 2026 | V9.5 | Delivery: dirección exacta obligatoria y botón para compartir la ubicación (columna `pedidos.ubicacion`, botón Mapa en el panel). Combo tarde: capuccino o iced americano + torta, S/ 22. |
 | 17 nov 2026 | V9.4 | Delivery gratis desde S/ 45 solo en Virú Pueblo (aviso del modo Delivery y carrito). |
 | 17 nov 2026 | V9.3 | Se quitó el texto de tápers del aviso de Recoger y Delivery (el cobro sigue en el carrito). |

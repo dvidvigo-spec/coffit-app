@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V7 (modos de pedido con color propio).
+> Última actualización: 17 nov 2026, versión V8 (panel interno de pedidos en tiempo real).
 
 ---
 
@@ -26,6 +26,7 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 | Supabase | Organización "Coffit", proyecto `coffit-app`, ref `curlxsugmcjurewfngqm`, URL `https://curlxsugmcjurewfngqm.supabase.co`, plan gratis |
 | Clave Supabase en la app | `sb_publishable_tJNmh5TnRt0gNB2Zo4C-kQ_Jnawdy9J` (clave publicable, segura en el navegador; la seguridad la da RLS). **Nunca** poner la `service_role`/secret key en la app. |
 | WhatsApp oficial | **944 667 516** (`wa.me/51944667516`). Recibe los pedidos y el botón de contacto. El 941 112 979 de la carta ya NO es el oficial. |
+| Panel interno (personal) | https://coffit-app.vercel.app/panel/ — login con correo autorizado en `public.staff` (hoy: coffit.cafeteria1@gmail.com). La contraseña la pone y guarda David; nunca va en código ni en este archivo. |
 | Vista previa en Claude | Artifact "Coffit Pide Aquí", https://claude.ai/artifact/C1Ec74V8fhmQCLt61ctMwL (ahí Supabase no conecta; usa la carta incluida). |
 
 **Supabase desde Claude:** el conector de Supabase está conectado a Claude (17 nov 2026). Claude puede consultar y migrar la base directo (`execute_sql`, `apply_migration`, `get_advisors`) también desde el celular, sin Chrome. Project id: `curlxsugmcjurewfngqm`.
@@ -46,6 +47,9 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 
 **Seguridad (RLS activado):**
 - `productos`: la clave anónima puede leer solo los productos con `activo = true`.
+- `staff` (email PK, nombre): lista de correos autorizados para el panel. RLS sin políticas: nadie la lee desde afuera; se edita desde Supabase. Para sumar a alguien: `insert into staff(email) values ('correo@...')` y que esa persona cree su acceso en /panel.
+- `is_staff()`: función (security definer) que da verdadero si el usuario conectado tiene el correo confirmado y está en `staff`.
+- `pedidos`: el personal (usuario autenticado con `is_staff()`) puede **leer y actualizar** (cambiar estado). La tabla está en la publicación `supabase_realtime` (pedidos llegan al panel al instante).
 - `pedidos`: la clave anónima solo puede **insertar** (con total entre 0 y 5000, y de 1 a 60 ítems). **Nadie de afuera puede leer los pedidos**; se ven en el panel de Supabase, en Table Editor → pedidos.
 
 **Para cambiar precios u ocultar productos sin tocar código:** en Supabase, Table Editor → `productos`, editar `precio` o poner `activo = false`. La app toma los cambios al abrirse.
@@ -66,6 +70,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
 - **Club:** sellos (8 sellos = café gratis; hoy solo se guardan en el celular), tortas enteras, Miércoles Coffit y pedidos corporativos.
 - **Pedido:** ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
+- **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta con sonido, vibración y notificación al entrar un pedido (tocar "Activar alertas" una vez), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
 - **Botón flotante de WhatsApp** (abajo a la izquierda, con rebote).
 
 **Diseño:** color caramelo #B98D62 (protagonista), espresso #2A1D16 (texto y botones), leche #FBF7F2 (fondo) y verde hoja #5E7B4C (solo para ahorro, pedido y logros). Fuentes Marcellus (títulos) y Figtree (texto). Se piensa primero en el celular, con botones de al menos 44 px.
@@ -135,7 +140,7 @@ Git está instalado en `C:\Program Files\Git`.
 
 **Técnicos:**
 - [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
-- [ ] Panel interno para Coffit: ver pedidos nuevos y cambiar su estado (bosquejo enviado a David el 17 nov; resuelve también el pedido de avisar a 2 WhatsApp).
+- [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Falta: David crea su acceso y confirma el correo; definir cuántas personas lo usarán.
 - [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
 - [ ] Club Coffit en Supabase (sellos por celular, no en el celular del cliente).
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
@@ -153,6 +158,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V8 | Panel interno en /panel: tabla `staff`, función `is_staff()`, RLS de lectura/actualización de pedidos para el personal y tiempo real. |
 | 17 nov 2026 | — | Conector de Supabase conectado a Claude; asesor de seguridad sin alertas; primer pedido real registrado (id 2, recojo, S/ 47). |
 | 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. Publicada en Vercel y verificada. |
 

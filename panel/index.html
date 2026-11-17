@@ -129,7 +129,7 @@ const $=s=>document.querySelector(s);
 const money=v=>'S/ '+Number(v||0).toFixed(2);
 const COLS=[
   {k:'nuevo',t:'Nuevos',next:'preparando',go:'Aceptar y preparar'},
-  {k:'preparando',t:'Preparando',next:'en camino',go:'Listo'},
+  {k:'preparando',t:'Preparando',next:'en camino',go:'Listo / Enviar'},
   {k:'en camino',t:'Listos / En camino',next:'entregado',go:'Entregado'},
   {k:'entregado',t:'Entregados hoy'},
 ];
@@ -243,7 +243,7 @@ function card(o){
   const mins=(Date.now()-new Date(o.creado))/60000;
   const where=o.modo==='mesa'?`Mesa ${esc(o.mesa||'—')}`:o.modo==='recojo'?`Recoge ${esc(o.hora_recojo||'apenas pueda')}`:`${esc(o.direccion||'')}${o.referencia?' · '+esc(o.referencia):''}`;
   const items=(o.items||[]).map(i=>`<li><b>${i.cantidad} ×</b>${esc(i.nombre)}${i.detalle?`<small>${esc(i.detalle)}</small>`:''}${i.nota?`<small>Nota: ${esc(i.nota)}</small>`:''}</li>`).join('');
-  const wa=`https://wa.me/${phone(o.celular)}?text=${encodeURIComponent(`Hola ${o.nombre}, te escribimos de Coffit por tu pedido #${o.id}.`)}`;
+  const wa=`https://wa.me/${phone(o.celular)}?text=${encodeURIComponent(({preparando:`Hola ${o.nombre}, ya estamos preparando tu pedido #${o.id} de Coffit.`,'en camino':o.modo==='delivery'?`Hola ${o.nombre}, tu pedido #${o.id} de Coffit ya va en camino.`:o.modo==='recojo'?`Hola ${o.nombre}, tu pedido #${o.id} de Coffit está listo. Ya puedes pasar a recogerlo en Calle Libertad 316.`:`Hola ${o.nombre}, tu pedido #${o.id} ya está listo.`})[o.estado]||`Hola ${o.nombre}, te escribimos de Coffit por tu pedido #${o.id}.`)}`;
   return `<div class="card ${o.modo} ${fresh.has(o.id)?'fresh':''}">
     <div class="ct"><span class="mode">${MODE[o.modo]||o.modo} · #${o.id}</span><span class="age ${o.estado==='nuevo'&&mins>5?'late':''}">${ago(o.creado)}</span></div>
     <div class="who">${esc(o.nombre)}</div>${(()=>{const n=club(o);return n>0&&n%5===0?`<div class="gift">☕ Le toca café caliente GRATIS (completó ${n} pedidos)</div>`:`<div class="meta">Club: sello ${n%5+1} de 5</div>`})()}

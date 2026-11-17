@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.1 (táper S/ 2 para club sándwich y pollo a la plancha).
+> Última actualización: 17 nov 2026, versión V9.2 (bubble tea sin táper).
 
 ---
 
@@ -76,7 +76,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 **Diseño:** color caramelo #B98D62 (protagonista), espresso #2A1D16 (texto y botones), leche #FBF7F2 (fondo) y verde hoja #5E7B4C (solo para ahorro, pedido y logros). Fuentes Marcellus (títulos) y Figtree (texto). Se piensa primero en el celular, con botones de al menos 44 px.
 
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
-- Táper: S/ 1 por cada unidad en pedidos para recoger o delivery (no en mesa); **S/ 2 para Club sándwich y Pollo a la plancha** (regex `TAPER2`, función `tap(i)`). Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
+- Táper: S/ 1 por cada unidad en pedidos para recoger o delivery (no en mesa); **S/ 2 para Club sándwich y Pollo a la plancha** (regex `TAPER2`, función `tap(i)`); **toda la categoría "Bubble tea" va sin táper**. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
 - Delivery S/ 4, gratis desde S/ 45.
 - Combo almuerzo: plato de fondo + limonada clásica (+S/ 6, ahorra S/ 3).
 - Combo tarde: café caliente + porción de torta, S/ 22.
@@ -159,6 +159,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.2 | Bubble tea (toda la categoría) sin táper. |
 | 17 nov 2026 | V9.1 | Táper de S/ 2 solo para Club sándwich y Pollo a la plancha. |
 | 17 nov 2026 | V9 | Táper S/ 1 por unidad en recojo y delivery: se ve en el carrito, el WhatsApp, el panel y la nueva columna `pedidos.taper`. |
 | 17 nov 2026 | V8 | Panel interno en /panel: tabla `staff`, función `is_staff()`, RLS de lectura/actualización de pedidos para el personal y tiempo real. |

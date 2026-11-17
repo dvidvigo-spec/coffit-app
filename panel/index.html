@@ -198,7 +198,7 @@ async function setState(id,estado){
 
 /* ---------- Alertas ----------
    iPhone: el sonido sale por un <audio> (se oye aunque el celular esté en silencio),
-   se repite cada 15 s mientras haya pedidos nuevos sin aceptar, y la pantalla
+   se repite cada 3 s mientras haya pedidos nuevos sin aceptar, y la pantalla
    se mantiene encendida (Wake Lock) para que el panel no se duerma. */
 function chimeURL(){ // genera un "ding-dong" WAV en memoria
   const sr=22050, dur=1.6, n=Math.floor(sr*dur), d=new DataView(new ArrayBuffer(44+n*2));
@@ -224,7 +224,7 @@ function beep(){ if(!soundOn)return; try{chime.currentTime=0;chime.play().catch(
 function pending(){ return orders.some(o=>o.estado==='nuevo') }
 function ring(){ // repite mientras haya pedidos nuevos
   clearInterval(ringTimer); beep();
-  ringTimer=setInterval(()=>{ if(pending()) beep(); else clearInterval(ringTimer) },15000);
+  ringTimer=setInterval(()=>{ if(pending()) beep(); else clearInterval(ringTimer) },3000);
 }
 function alertNew(o){
   ring(); if(navigator.vibrate)navigator.vibrate([300,150,300,150,300]);

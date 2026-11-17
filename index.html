@@ -568,8 +568,8 @@ $$('[data-jump]').forEach(b=>b.onclick=()=>openGroup(b.dataset.jump));
 const MODEICON={"mesa": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 9h16\"/><path d=\"M6 9v10M18 9v10\"/><path d=\"M8 5h8\"/></svg>", "recojo": "<svg viewBox=\"0 0 24 24\"><path d=\"M5 8h14l-1.4 11.2a1 1 0 0 1-1 .8H7.4a1 1 0 0 1-1-.8z\"/><path d=\"M9 8V6a3 3 0 0 1 6 0v2\"/></svg>", "delivery": "<svg viewBox=\"0 0 24 24\"><circle cx=\"6.5\" cy=\"17\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17\" r=\"2.5\"/><path d=\"M9 17h6l-2-6H9\"/><path d=\"M15 6h2l3 6v5\"/><path d=\"M4 12h5\"/></svg>"};
 const MODEINFO={
   mesa:['Pedido en tu mesa','Pide desde tu celular y te lo llevamos a la mesa. Al final te pedimos el número de mesa.','En mesa'],
-  recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Cada producto va en táper (+S/ '+TAPER+' c/u; club sándwich y pollo a la plancha, S/ 2; bubble tea, sin táper).','Para recoger'],
-  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Cada producto va en táper (+S/ '+TAPER+' c/u; club sándwich y pollo a la plancha, S/ 2; bubble tea, sin táper).','Delivery']};
+  recojo:['Pide y recoge sin hacer cola','Lo preparamos mientras llegas a Calle Libertad 316. Elige la hora al confirmar.','Para recoger'],
+  delivery:['Delivery a tu casa en Virú','S/ '+DELIVERY_FEE+' de envío, gratis desde S/ '+FREE_FROM+'. Al final te pedimos tu dirección.','Delivery']};
 function setMode(m,anim){
   mode=m; document.body.dataset.mode=m;
   $$('#modes button').forEach(x=>{const on=x.dataset.m===m;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});

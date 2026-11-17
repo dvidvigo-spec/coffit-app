@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.10 (tápers por producto en desayunos).
+> Última actualización: 17 nov 2026, versión V9.11 (desayuno fit y tropical con 3 tápers).
 
 ---
 
@@ -77,7 +77,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 **Diseño:** color caramelo #B98D62 (protagonista), espresso #2A1D16 (texto y botones), leche #FBF7F2 (fondo) y verde hoja #5E7B4C (solo para ahorro, pedido y logros). Fuentes Marcellus (títulos) y Figtree (texto). Se piensa primero en el celular, con botones de al menos 44 px.
 
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
-- Táper: S/ 1 por táper, solo en recoger o delivery (no en mesa). Cada producto lleva 1 táper salvo los del mapa `TAPERS` (función `tapN(i)`): Club sándwich 2, Pollo a la plancha 2, Desayuno al paso 2, Desayuno americano 3, Desayuno criollo 4, Desayuno del bosque 4, Desayuno Coffit 4, Desayuno clásico 1. **Toda la categoría "Bubble tea" va sin táper**. Para cambiar uno, editar `TAPERS` en `index.html`. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
+- Táper: S/ 1 por táper, solo en recoger o delivery (no en mesa). Cada producto lleva 1 táper salvo los del mapa `TAPERS` (función `tapN(i)`): Club sándwich 2, Pollo a la plancha 2, Desayuno al paso 2, Desayuno americano 3, Desayuno criollo 4, Desayuno del bosque 4, Desayuno Coffit 4, Desayuno clásico 1, Desayuno fit 3, Desayuno tropical 3. **Toda la categoría "Bubble tea" va sin táper**. Para cambiar uno, editar `TAPERS` en `index.html`. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
 - Delivery S/ 4, gratis desde S/ 45 **solo en Virú Pueblo** (se avisa en el modo Delivery y en el carrito; la app no valida la zona, la confirma el personal).
 - Delivery: se pide dirección exacta (calle, número o Mz/Lote, sector; mínimo 8 caracteres) y un botón opcional "Compartir mi ubicación actual" (GPS del celular) que agrega un link de Google Maps al WhatsApp, a `pedidos.ubicacion` y al botón "Mapa" del panel.
 - Los avisos de los modos (Recoger/Delivery) no mencionan los tápers; el cobro se ve solo en el carrito.
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.11 | Desayuno fit y Desayuno tropical: 3 tápers cada uno. |
 | 17 nov 2026 | V9.10 | Tápers por producto: desayuno al paso 2, americano 3, criollo 4, del bosque 4, Coffit 4, clásico 1 (club sándwich y pollo a la plancha siguen en 2). |
 | 17 nov 2026 | V9.9 | Botón "Eliminar" bajo el precio de cada producto en "Tu pedido". |
 | 17 nov 2026 | V9.8 | Club Coffit pasa a 5 sellos (6.º café caliente gratis); el panel cuenta los pedidos entregados por celular y avisa cuando toca el café gratis. |

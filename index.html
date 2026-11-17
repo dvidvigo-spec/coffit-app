@@ -473,7 +473,7 @@ const subtotal=()=>cart.reduce((s,i)=>s+i.unit*i.qty,0);
 const fee=()=>mode==='delivery'&&subtotal()>0&&subtotal()<FREE_FROM?DELIVERY_FEE:0;
 function wedOff(){ if(new Date().getDay()!==3)return 0; const u=[]; cart.forEach(i=>{if(/^Frap/.test(i.name)&&!/16 oz/.test(i.det))for(let k=0;k<i.qty;k++)u.push(i.unit)}); u.sort((a,b)=>a-b); let d=0; for(let k=0;k<Math.floor(u.length/2);k++)d+=u[k]/2; return d }
 // Cuántos tápers lleva cada producto (S/ 1 cada uno). Los que no están aquí llevan 1; bubble tea, 0.
-const TAPERS={'club sándwich':2,'club sandwich':2,'pollo a la plancha':2,'desayuno al paso':2,'desayuno americano':3,'desayuno criollo':4,'desayuno del bosque':4,'desayuno coffit':4,'desayuno clásico':1};
+const TAPERS={'club sándwich':2,'club sandwich':2,'pollo a la plancha':2,'desayuno al paso':2,'desayuno americano':3,'desayuno criollo':4,'desayuno del bosque':4,'desayuno coffit':4,'desayuno clásico':1,'desayuno fit':3,'desayuno tropical':3};
 const tapN=i=>{ if(mode==='mesa'||i.cat==='Bubble tea')return 0; const n=i.name.toLowerCase(); const k=Object.keys(TAPERS).find(k=>n.startsWith(k)); return k?TAPERS[k]:1 };
 const tap=i=>tapN(i)*TAPER;
 const tapers=()=>cart.reduce((s,i)=>s+tap(i)*i.qty,0);

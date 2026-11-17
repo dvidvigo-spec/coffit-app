@@ -72,9 +72,10 @@ ul.items small{display:block;color:var(--muted);font-size:12.5px}
 .pay{font-size:13px;color:var(--muted)}
 .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:44px;text-align:center;text-decoration:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 8px;font-weight:700;font-size:13.5px;color:var(--espresso)}
-.acts .go{flex:2;background:var(--espresso);color:var(--milk);border-color:var(--espresso)}
+.acts .go{flex:1 1 100%;background:var(--espresso);color:var(--milk);border-color:var(--espresso)}
 .acts .wa{color:#128C7E}
 .acts .x{color:var(--alert)}
+.gift{margin-top:6px;background:var(--leaf);color:#fff;font-weight:800;font-size:13.5px;border-radius:10px;padding:7px 10px}
 .empty{color:var(--muted);text-align:center;padding:26px 8px;border:1px dashed var(--line);border-radius:14px;font-size:14px}
 .top5{padding:0 16px 30px;color:var(--muted);font-size:13px}
 </style>
@@ -127,7 +128,7 @@ const COLS=[
   {k:'entregado',t:'Entregados hoy'},
 ];
 const MODE={mesa:'Mesa',recojo:'Recoger',delivery:'Delivery'};
-let orders=[], tab='nuevo', soundOn=false, ctx=null, fresh=new Set();
+let hist={}, orders=[], tab='nuevo', soundOn=false, ctx=null, fresh=new Set();
 
 /* ---------- Acceso ---------- */
 const lmsg=(t,ok)=>{$('#lMsg').textContent=t;$('#lMsg').className='msg '+(ok?'ok':'err')};
@@ -159,14 +160,23 @@ function todayStartISO(){ // inicio del día en Lima (UTC-5)
   const now=new Date(), lima=new Date(now.getTime()-5*3600e3); lima.setUTCHours(0,0,0,0);
   return new Date(lima.getTime()+5*3600e3).toISOString();
 }
+const ph=c=>String(c||'').replace(/\D/g,'').slice(-9);
+async function loadHist(){ // sellos del Club: pedidos entregados por celular
+  const {data}=await sb.from('pedidos').select('id,celular').eq('estado','entregado').limit(10000);
+  hist={}; (data||[]).forEach(o=>{const k=ph(o.celular);(hist[k]=hist[k]||new Set()).add(o.id)});
+}
+function club(o){ // cuántos entregados antes de este pedido
+  const set=hist[ph(o.celular)]||new Set(); let prev=0; set.forEach(id=>{if(id<o.id)prev++}); return prev;
+}
 async function load(){
+  await loadHist();
   const {data,error}=await sb.from('pedidos').select('*').or(`creado.gte.${todayStartISO()},estado.in.(nuevo,preparando,"en camino")`).order('creado',{ascending:true});
   if(!error){orders=data;draw()}
 }
 function subscribe(){
   sb.channel('pedidos-panel').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},p=>{
     if(p.eventType==='INSERT'){orders.push(p.new);fresh.add(p.new.id);alertNew(p.new)}
-    else if(p.eventType==='UPDATE'){const i=orders.findIndex(o=>o.id===p.new.id); if(i>=0)orders[i]=p.new; else orders.push(p.new)}
+    else if(p.eventType==='UPDATE'){const k=ph(p.new.celular);if(p.new.estado==='entregado')(hist[k]=hist[k]||new Set()).add(p.new.id);else if(hist[k])hist[k].delete(p.new.id);const i=orders.findIndex(o=>o.id===p.new.id); if(i>=0)orders[i]=p.new; else orders.push(p.new)}
     draw();
   }).subscribe(s=>{const on=s==='SUBSCRIBED';$('#live').classList.toggle('on',on);$('#liveTx').textContent=on?'En vivo':'Reconectando'});
 }
@@ -202,7 +212,7 @@ function card(o){
   const wa=`https://wa.me/${phone(o.celular)}?text=${encodeURIComponent(`Hola ${o.nombre}, te escribimos de Coffit por tu pedido #${o.id}.`)}`;
   return `<div class="card ${o.modo} ${fresh.has(o.id)?'fresh':''}">
     <div class="ct"><span class="mode">${MODE[o.modo]||o.modo} · #${o.id}</span><span class="age ${o.estado==='nuevo'&&mins>5?'late':''}">${ago(o.creado)}</span></div>
-    <div class="who">${esc(o.nombre)}</div>
+    <div class="who">${esc(o.nombre)}</div>${(()=>{const n=club(o);return n>0&&n%5===0?`<div class="gift">☕ Le toca café caliente GRATIS (completó ${n} pedidos)</div>`:`<div class="meta">Club: sello ${n%5+1} de 5</div>`})()}
     <div class="meta">${where}<br>${esc(o.celular)}</div>
     <ul class="items">${items}</ul>
     <div class="tot"><span>Total</span><span>${money(o.total)}</span></div>

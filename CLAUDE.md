@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V9.7 (combo tarde con 5 cafés y tortas de precio similar).
+> Última actualización: 17 nov 2026, versión V9.8 (Club Coffit de 5 sellos, contado por celular en el panel).
 
 ---
 
@@ -68,7 +68,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 **Pantallas:**
 - **Inicio:** modo (En mesa / Recoger / Delivery; cada uno con su color e ícono: mesa caramelo #B98D62, recoger verde #5E7B4C, delivery azul #2F6690, más un aviso que explica el modo, una animación y un toast al cambiar; el modo se recuerda en el celular y tiñe la barra "Ver mi pedido"), buscador, promo del día, grilla de 9 secciones con foto y "Lo más pedido".
 - **Carta:** pestañas fijas por sección, subsecciones que se marcan al bajar, y "+" que agrega directo o se vuelve contador.
-- **Club:** sellos (8 sellos = café gratis; hoy solo se guardan en el celular), tortas enteras, Miércoles Coffit y pedidos corporativos.
+- **Club:** sellos (5 pedidos entregados = el 6.º café caliente gratis). La cuenta oficial la lleva el **panel**: cuenta los pedidos en estado `entregado` por celular (últimos 9 dígitos) y en cada pedido nuevo muestra "Club: sello N de 5" o el aviso verde "Le toca café caliente GRATIS". En la app del cliente los sellos solo se muestran desde su celular (aproximado), tortas enteras, Miércoles Coffit y pedidos corporativos.
 - **Pedido:** ofertas sugeridas, barra de delivery gratis, datos del cliente, pago Yape/Plin o efectivo. Al enviar, el pedido se guarda en Supabase (`saveOrder`, sin esperar respuesta) y se abre WhatsApp con el pedido.
 - **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta con sonido, vibración y notificación al entrar un pedido (tocar "Activar alertas" una vez), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
 - **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
@@ -146,7 +146,7 @@ Git está instalado en `C:\Program Files\Git`.
 - [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
 - [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Se usará una sola cuenta compartida (coffit.cafeteria1@gmail.com) para todo el personal. Falta: David crea el acceso y confirma el correo.
 - [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
-- [ ] Club Coffit en Supabase (sellos por celular, no en el celular del cliente).
+- [ ] Club Coffit: que el cliente vea sus sellos reales (hoy el conteo oficial está en el panel; la app del cliente muestra un conteo local). Solo cuentan pedidos hechos por la app y marcados como Entregado.
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
 - [ ] Dominio propio (opcional) y revisar si pasar a un plan pagado de Vercel cuando haya uso comercial.
 
@@ -162,6 +162,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9.8 | Club Coffit pasa a 5 sellos (6.º café caliente gratis); el panel cuenta los pedidos entregados por celular y avisa cuando toca el café gratis. |
 | 17 nov 2026 | V9.7 | Combo tarde: vuelven latte, americano y mocaccino (más capuccino e iced americano); se quitó el tiramisú y entró el cheesecake de maracuyá. |
 | 17 nov 2026 | V9.6 | Botón X arriba a la derecha para cerrar cualquier ventana (producto, combo, carrito, datos). |
 | 17 nov 2026 | V9.5 | Delivery: dirección exacta obligatoria y botón para compartir la ubicación (columna `pedidos.ubicacion`, botón Mapa en el panel). Combo tarde: capuccino o iced americano + torta, S/ 22. |

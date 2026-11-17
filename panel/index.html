@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Coffit Panel de Pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+/* Panel interno: mismo mundo de marca que la app. Columnas por estado; en celular, pestañas. */
+:root{
+  --caramel:#B98D62; --caramel-soft:#F3E7D9; --espresso:#2A1D16; --milk:#FBF7F2; --paper:#fff;
+  --leaf:#5E7B4C; --leaf-soft:#E4ECDD; --blue:#2F6690; --blue-soft:#DDE9F2; --muted:#7C6B5E; --line:#EADFD2; --alert:#B04A32; --alert-soft:#F6E1DB;
+  --display:'Marcellus',Georgia,serif; --body:'Figtree',system-ui,sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--milk);color:var(--espresso);font-family:var(--body);font-size:15px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2.5px solid var(--caramel);outline-offset:2px}
+.hidden{display:none!important}
+/* Login */
+.login{max-width:380px;margin:12vh auto 0;padding:0 18px}
+.login h1{font-family:var(--display);font-weight:400;font-size:34px;margin:0 0 4px}
+.login p{color:var(--muted);margin:0 0 18px;line-height:1.45}
+.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px;font-size:15px;font-family:inherit;margin-bottom:10px;background:#fff}
+.btn{width:100%;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:15px;background:var(--espresso);color:var(--milk)}
+.link{background:none;border:0;color:var(--caramel);font-weight:700;padding:10px 0;font-size:14px}
+.msg{font-size:13.5px;margin-top:10px;line-height:1.45}
+.msg.err{color:var(--alert)} .msg.ok{color:var(--leaf)}
+/* App */
+header{position:sticky;top:0;z-index:5;background:var(--milk);padding:calc(10px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-size:22px;letter-spacing:.12em}
+.brand small{font-family:var(--body);letter-spacing:0;font-size:12px;color:var(--muted);margin-left:6px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.live i{width:9px;height:9px;border-radius:50%;background:#bbb}
+.live.on i{background:var(--leaf);box-shadow:0 0 0 4px var(--leaf-soft)}
+.hbtns{display:flex;gap:6px}
+.sbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-weight:700;font-size:13px}
+.sbtn.warn{background:var(--alert);color:#fff;border-color:var(--alert)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.kpi b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11.5px;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-top:10px;overflow-x:auto}
+.tab{flex:1;border:0;background:#EDE3D6;border-radius:10px;padding:9px 6px;font-weight:700;font-size:13px;color:var(--muted);white-space:nowrap}
+.tab.on{background:var(--espresso);color:var(--milk)}
+.tab .c{display:inline-block;min-width:20px;border-radius:999px;background:rgba(0,0,0,.08);padding:0 6px;margin-left:4px}
+.tab.on .c{background:rgba(255,255,255,.2)}
+.board{display:grid;grid-template-columns:1fr;gap:14px;padding:14px 16px 40px}
+@media(min-width:900px){.tabs{display:none}.board{grid-template-columns:repeat(4,1fr)}.col{display:block!important}}
+.col h2{font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between;color:var(--muted)}
+.col{display:none}.col.on{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;border-left:6px solid var(--caramel)}
+.card.recojo{border-left-color:var(--leaf)} .card.delivery{border-left-color:var(--blue)}
+.card.fresh{animation:fresh 1.2s ease 3}
+@keyframes fresh{50%{box-shadow:0 0 0 5px var(--alert-soft)}}
+.ct{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.mode{font-size:12px;font-weight:800;border-radius:999px;padding:3px 9px;background:var(--caramel-soft);color:#5C4128}
+.recojo .mode{background:var(--leaf-soft);color:#3B5230} .delivery .mode{background:var(--blue-soft);color:#1E4766}
+.who{font-weight:800;font-size:16px;margin-top:6px}
+.meta{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.4}
+.age{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.age.late{color:var(--alert)}
+ul.items{list-style:none;padding:0;margin:10px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+ul.items li{padding:6px 0;font-size:14px}
+ul.items li b{margin-right:4px}
+ul.items small{display:block;color:var(--muted);font-size:12.5px}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:16px}
+.pay{font-size:13px;color:var(--muted)}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.acts button,.acts a{flex:1;min-width:44px;text-align:center;text-decoration:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 8px;font-weight:700;font-size:13.5px;color:var(--espresso)}
+.acts .go{flex:2;background:var(--espresso);color:var(--milk);border-color:var(--espresso)}
+.acts .wa{color:#128C7E}
+.acts .x{color:var(--alert)}
+.empty{color:var(--muted);text-align:center;padding:26px 8px;border:1px dashed var(--line);border-radius:14px;font-size:14px}
+.top5{padding:0 16px 30px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+
+<section class="login" id="vLogin">
+  <h1>Panel Coffit</h1>
+  <p>Ingreso solo para el personal. Aquí llegan los pedidos de la app en tiempo real.</p>
+  <form id="fLogin">
+    <input class="f" id="em" type="email" placeholder="Correo de Coffit" autocomplete="username" required>
+    <input class="f" id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required minlength="8">
+    <button class="btn" id="bIn" type="submit">Ingresar</button>
+  </form>
+  <button class="link" id="bSignup">¿Primera vez? Crear el acceso con este correo</button>
+  <div class="msg" id="lMsg"></div>
+</section>
+
+<section class="hidden" id="vApp">
+  <header>
+    <div class="hrow">
+      <div class="brand">COFFIT<small>Pedidos</small></div>
+      <div class="hbtns">
+        <span class="live" id="live"><i></i><span id="liveTx">Conectando</span></span>
+        <button class="sbtn warn" id="bSound">Activar alertas</button>
+        <button class="sbtn" id="bOut">Salir</button>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="kN">0</b><span>pedidos hoy</span></div>
+      <div class="kpi"><b id="kV">S/ 0</b><span>ventas hoy</span></div>
+      <div class="kpi"><b id="kT">S/ 0</b><span>ticket prom.</span></div>
+      <div class="kpi"><b id="kP">0</b><span>por atender</span></div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </header>
+  <main class="board" id="board"></main>
+  <div class="top5" id="top5"></div>
+</section>
+
+<script>
+const SB_URL='https://curlxsugmcjurewfngqm.supabase.co', SB_KEY='sb_publishable_tJNmh5TnRt0gNB2Zo4C-kQ_Jnawdy9J';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s);
+const money=v=>'S/ '+Number(v||0).toFixed(2);
+const COLS=[
+  {k:'nuevo',t:'Nuevos',next:'preparando',go:'Aceptar y preparar'},
+  {k:'preparando',t:'Preparando',next:'en camino',go:'Listo'},
+  {k:'en camino',t:'Listos / En camino',next:'entregado',go:'Entregado'},
+  {k:'entregado',t:'Entregados hoy'},
+];
+const MODE={mesa:'Mesa',recojo:'Recoger',delivery:'Delivery'};
+let orders=[], tab='nuevo', soundOn=false, ctx=null, fresh=new Set();
+
+/* ---------- Acceso ---------- */
+const lmsg=(t,ok)=>{$('#lMsg').textContent=t;$('#lMsg').className='msg '+(ok?'ok':'err')};
+$('#fLogin').onsubmit=async e=>{
+  e.preventDefault(); lmsg('');
+  const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim().toLowerCase(),password:$('#pw').value});
+  if(error){lmsg(/confirm/i.test(error.message)?'Primero confirma tu correo: revisa la bandeja de Gmail (o Spam) y abre el enlace de Supabase.':'Correo o contraseña incorrectos.');return}
+  start();
+};
+$('#bSignup').onclick=async()=>{
+  const email=$('#em').value.trim().toLowerCase(), password=$('#pw').value;
+  if(!email||password.length<8){lmsg('Escribe el correo de Coffit y una contraseña de al menos 8 caracteres, luego toca de nuevo.');return}
+  const {error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/panel/'}});
+  if(error){lmsg('No se pudo crear el acceso: '+error.message);return}
+  lmsg('Listo. Te enviamos un correo para confirmar. Ábrelo, toca el enlace y luego vuelve aquí a ingresar.',true);
+};
+$('#bOut').onclick=async()=>{await sb.auth.signOut();location.reload()};
+
+async function start(){
+  const {data:{session}}=await sb.auth.getSession(); if(!session)return;
+  const {data:ok}=await sb.rpc('is_staff');
+  if(!ok){await sb.auth.signOut();$('#vLogin').classList.remove('hidden');$('#vApp').classList.add('hidden');lmsg('Este correo no está autorizado para el panel o aún no está confirmado.');return}
+  $('#vLogin').classList.add('hidden'); $('#vApp').classList.remove('hidden');
+  await load(); subscribe(); setInterval(draw,30000);
+}
+
+/* ---------- Datos ---------- */
+function todayStartISO(){ // inicio del día en Lima (UTC-5)
+  const now=new Date(), lima=new Date(now.getTime()-5*3600e3); lima.setUTCHours(0,0,0,0);
+  return new Date(lima.getTime()+5*3600e3).toISOString();
+}
+async function load(){
+  const {data,error}=await sb.from('pedidos').select('*').or(`creado.gte.${todayStartISO()},estado.in.(nuevo,preparando,"en camino")`).order('creado',{ascending:true});
+  if(!error){orders=data;draw()}
+}
+function subscribe(){
+  sb.channel('pedidos-panel').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},p=>{
+    if(p.eventType==='INSERT'){orders.push(p.new);fresh.add(p.new.id);alertNew(p.new)}
+    else if(p.eventType==='UPDATE'){const i=orders.findIndex(o=>o.id===p.new.id); if(i>=0)orders[i]=p.new; else orders.push(p.new)}
+    draw();
+  }).subscribe(s=>{const on=s==='SUBSCRIBED';$('#live').classList.toggle('on',on);$('#liveTx').textContent=on?'En vivo':'Reconectando'});
+}
+async function setState(id,estado){
+  const o=orders.find(x=>x.id===id); const prev=o.estado; o.estado=estado; draw();
+  const {error}=await sb.from('pedidos').update({estado}).eq('id',id);
+  if(error){o.estado=prev;draw();alert('No se pudo actualizar el pedido. Revisa tu conexión.')}
+}
+
+/* ---------- Alertas ---------- */
+$('#bSound').onclick=()=>{
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume();soundOn=true;beep();
+    $('#bSound').textContent='Alertas activas';$('#bSound').classList.remove('warn');
+    if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
+  }catch(e){}
+};
+function beep(){ if(!soundOn||!ctx)return; [0,0.25,0.5].forEach(t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=t===0.25?1046:880;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.0001,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(.4,ctx.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+t+.2);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.22)}) }
+function alertNew(o){
+  beep(); if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  try{ if('Notification' in window&&Notification.permission==='granted') new Notification('Nuevo pedido Coffit',{body:`${MODE[o.modo]} · ${o.nombre} · ${money(o.total)}`}) }catch(e){}
+  document.title='(●) Nuevo pedido · Coffit'; setTimeout(()=>document.title='Coffit Panel de Pedidos',8000);
+}
+
+/* ---------- Vista ---------- */
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ago(ts){const m=Math.floor((Date.now()-new Date(ts))/60000);return m<1?'ahora':m<60?`hace ${m} min`:`hace ${Math.floor(m/60)} h ${m%60} min`}
+function phone(c){const d=String(c||'').replace(/\D/g,'');return d.length===9?'51'+d:d}
+function card(o){
+  const col=COLS.find(c=>c.k===o.estado)||COLS[0];
+  const mins=(Date.now()-new Date(o.creado))/60000;
+  const where=o.modo==='mesa'?`Mesa ${esc(o.mesa||'—')}`:o.modo==='recojo'?`Recoge ${esc(o.hora_recojo||'apenas pueda')}`:`${esc(o.direccion||'')}${o.referencia?' · '+esc(o.referencia):''}`;
+  const items=(o.items||[]).map(i=>`<li><b>${i.cantidad} ×</b>${esc(i.nombre)}${i.detalle?`<small>${esc(i.detalle)}</small>`:''}${i.nota?`<small>Nota: ${esc(i.nota)}</small>`:''}</li>`).join('');
+  const wa=`https://wa.me/${phone(o.celular)}?text=${encodeURIComponent(`Hola ${o.nombre}, te escribimos de Coffit por tu pedido #${o.id}.`)}`;
+  return `<div class="card ${o.modo} ${fresh.has(o.id)?'fresh':''}">
+    <div class="ct"><span class="mode">${MODE[o.modo]||o.modo} · #${o.id}</span><span class="age ${o.estado==='nuevo'&&mins>5?'late':''}">${ago(o.creado)}</span></div>
+    <div class="who">${esc(o.nombre)}</div>
+    <div class="meta">${where}<br>${esc(o.celular)}</div>
+    <ul class="items">${items}</ul>
+    <div class="tot"><span>Total</span><span>${money(o.total)}</span></div>
+    <div class="pay">${esc(o.pago||'')}${o.paga_con?' · paga con S/ '+esc(o.paga_con):''}${Number(o.delivery)>0?' · incluye delivery '+money(o.delivery):''}${Number(o.descuento)>0?' · descuento '+money(o.descuento):''}</div>
+    <div class="acts">
+      ${col.next?`<button class="go" data-id="${o.id}" data-to="${col.next}">${col.go}</button>`:''}
+      <a class="wa" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
+      ${o.estado!=='entregado'?`<button class="x" data-id="${o.id}" data-to="cancelado" aria-label="Cancelar pedido">Cancelar</button>`:''}
+    </div></div>`;
+}
+function draw(){
+  const start=new Date(todayStartISO());
+  const today=orders.filter(o=>new Date(o.creado)>=start&&o.estado!=='cancelado');
+  const sum=today.reduce((s,o)=>s+Number(o.total),0);
+  $('#kN').textContent=today.length; $('#kV').textContent='S/ '+sum.toFixed(0);
+  $('#kT').textContent='S/ '+(today.length?(sum/today.length).toFixed(0):0);
+  $('#kP').textContent=orders.filter(o=>['nuevo','preparando','en camino'].includes(o.estado)).length;
+  const by=k=>orders.filter(o=>o.estado===k&&(k!=='entregado'||new Date(o.creado)>=start)).sort((a,b)=>k==='entregado'?new Date(b.creado)-new Date(a.creado):new Date(a.creado)-new Date(b.creado));
+  $('#tabs').innerHTML=COLS.map(c=>`<button class="tab ${c.k===tab?'on':''}" data-k="${c.k}">${c.t.split(' /')[0]}<span class="c">${by(c.k).length}</span></button>`).join('');
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.k;draw()});
+  $('#board').innerHTML=COLS.map(c=>{const L=by(c.k);return `<div class="col ${c.k===tab?'on':''}"><h2><span>${c.t}</span><span>${L.length}</span></h2>${L.length?L.map(card).join(''):`<div class="empty">${c.k==='nuevo'?'Sin pedidos nuevos. Cuando entre uno, sonará una alerta.':'Nada por aquí.'}</div>`}</div>`}).join('');
+  document.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>{const id=+b.dataset.id,to=b.dataset.to; if(to==='cancelado'&&!confirm('¿Cancelar el pedido #'+id+'?'))return; fresh.delete(id); setState(id,to)});
+  const cnt={}; today.forEach(o=>(o.items||[]).forEach(i=>cnt[i.nombre]=(cnt[i.nombre]||0)+Number(i.cantidad||1)));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $('#top5').textContent=top.length?'Lo más pedido hoy: '+top.map(([n,c])=>`${n} (${c})`).join(' · '):'';
+}
+
+sb.auth.onAuthStateChange((ev)=>{ if(ev==='SIGNED_IN') start() });
+start();
+</script>
+</body>
+</html>

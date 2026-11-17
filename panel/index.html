@@ -26,6 +26,7 @@ button:focus-visible,input:focus-visible{outline:2.5px solid var(--caramel);outl
 .login p{color:var(--muted);margin:0 0 18px;line-height:1.45}
 .f{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px;font-size:15px;font-family:inherit;margin-bottom:10px;background:#fff}
 .btn{width:100%;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:15px;background:var(--espresso);color:var(--milk)}
+.btn2{width:100%;margin-top:10px;border:1.5px solid var(--espresso);border-radius:12px;padding:13px;font-weight:800;font-size:15px;background:transparent;color:var(--espresso)}
 .link{background:none;border:0;color:var(--caramel);font-weight:700;padding:10px 0;font-size:14px}
 .msg{font-size:13.5px;margin-top:10px;line-height:1.45}
 .msg.err{color:var(--alert)} .msg.ok{color:var(--leaf)}
@@ -90,7 +91,7 @@ ul.items small{display:block;color:var(--muted);font-size:12.5px}
     <input class="f" id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required minlength="8">
     <button class="btn" id="bIn" type="submit">Ingresar</button>
   </form>
-  <button class="link" id="bSignup">¿Primera vez? Crear el acceso con este correo</button>
+  <button class="btn2" id="bSignup" type="button">Primera vez: crear el acceso</button>
   <div class="msg" id="lMsg"></div>
 </section>
 
@@ -135,7 +136,7 @@ const lmsg=(t,ok)=>{$('#lMsg').textContent=t;$('#lMsg').className='msg '+(ok?'ok
 $('#fLogin').onsubmit=async e=>{
   e.preventDefault(); lmsg('');
   const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim().toLowerCase(),password:$('#pw').value});
-  if(error){lmsg(/confirm/i.test(error.message)?'Primero confirma tu correo: revisa la bandeja de Gmail (o Spam) y abre el enlace de Supabase.':'Correo o contraseña incorrectos.');return}
+  if(error){lmsg(/confirm/i.test(error.message)?'Primero confirma tu correo: revisa la bandeja de Gmail (o Spam) y abre el enlace de Supabase.':'Correo o contraseña incorrectos. Si es la primera vez, toca "Primera vez: crear el acceso".');return}
   start();
 };
 $('#bSignup').onclick=async()=>{

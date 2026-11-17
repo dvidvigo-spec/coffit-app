@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V8 (panel interno de pedidos en tiempo real).
+> Última actualización: 17 nov 2026, versión V9 (cobro de táper S/ 1 por unidad en recojo y delivery).
 
 ---
 
@@ -43,7 +43,7 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 `id int PK · categoria · nombre · precio numeric · precio_grande numeric (16 oz o torta entera) · descripcion · orden · activo bool · actualizado`
 
 **`public.pedidos`**: cada pedido enviado desde la app.
-`id identity · creado · modo ('mesa'|'recojo'|'delivery') · nombre · celular · mesa · hora_recojo · direccion · referencia · pago · paga_con · subtotal · delivery · descuento · total · items jsonb [{id,nombre,detalle,nota,precio,cantidad}] · estado ('nuevo'|'preparando'|'en camino'|'entregado'|'cancelado')`
+`id identity · creado · modo ('mesa'|'recojo'|'delivery') · nombre · celular · mesa · hora_recojo · direccion · referencia · pago · paga_con · subtotal · taper · delivery · descuento · total · items jsonb [{id,nombre,detalle,nota,precio,cantidad}] · estado ('nuevo'|'preparando'|'en camino'|'entregado'|'cancelado')`
 
 **Seguridad (RLS activado):**
 - `productos`: la clave anónima puede leer solo los productos con `activo = true`.
@@ -76,6 +76,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 **Diseño:** color caramelo #B98D62 (protagonista), espresso #2A1D16 (texto y botones), leche #FBF7F2 (fondo) y verde hoja #5E7B4C (solo para ahorro, pedido y logros). Fuentes Marcellus (títulos) y Figtree (texto). Se piensa primero en el celular, con botones de al menos 44 px.
 
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
+- Táper: S/ 1 por cada unidad en pedidos para recoger o delivery (no en mesa). Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
 - Delivery S/ 4, gratis desde S/ 45.
 - Combo almuerzo: plato de fondo + limonada clásica (+S/ 6, ahorra S/ 3).
 - Combo tarde: café caliente + porción de torta, S/ 22.
@@ -140,7 +141,7 @@ Git está instalado en `C:\Program Files\Git`.
 
 **Técnicos:**
 - [x] GitHub y Supabase conectados a Claude (push y SQL directos, también desde el celular).
-- [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Falta: David crea su acceso y confirma el correo; definir cuántas personas lo usarán.
+- [x] Panel interno `/panel` (17 nov): pedidos en vivo con alerta, columnas por estado, resumen del día. Se usará una sola cuenta compartida (coffit.cafeteria1@gmail.com) para todo el personal. Falta: David crea el acceso y confirma el correo.
 - [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
 - [ ] Club Coffit en Supabase (sellos por celular, no en el celular del cliente).
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
@@ -158,6 +159,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V9 | Táper S/ 1 por unidad en recojo y delivery: se ve en el carrito, el WhatsApp, el panel y la nueva columna `pedidos.taper`. |
 | 17 nov 2026 | V8 | Panel interno en /panel: tabla `staff`, función `is_staff()`, RLS de lectura/actualización de pedidos para el personal y tiempo real. |
 | 17 nov 2026 | — | Conector de Supabase conectado a Claude; asesor de seguridad sin alertas; primer pedido real registrado (id 2, recojo, S/ 47). |
 | 16 nov 2026 | V6 | Supabase: tablas `productos` (188) y `pedidos` con RLS; la app lee la carta de Supabase y guarda cada pedido. Publicada en Vercel y verificada. |

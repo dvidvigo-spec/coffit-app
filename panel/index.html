@@ -206,7 +206,7 @@ function card(o){
     <div class="meta">${where}<br>${esc(o.celular)}</div>
     <ul class="items">${items}</ul>
     <div class="tot"><span>Total</span><span>${money(o.total)}</span></div>
-    <div class="pay">${esc(o.pago||'')}${o.paga_con?' · paga con S/ '+esc(o.paga_con):''}${Number(o.delivery)>0?' · incluye delivery '+money(o.delivery):''}${Number(o.descuento)>0?' · descuento '+money(o.descuento):''}</div>
+    <div class="pay">${esc(o.pago||'')}${o.paga_con?' · paga con S/ '+esc(o.paga_con):''}${Number(o.taper)>0?' · tápers '+money(o.taper):''}${Number(o.delivery)>0?' · incluye delivery '+money(o.delivery):''}${Number(o.descuento)>0?' · descuento '+money(o.descuento):''}</div>
     <div class="acts">
       ${col.next?`<button class="go" data-id="${o.id}" data-to="${col.next}">${col.go}</button>`:''}
       <a class="wa" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>

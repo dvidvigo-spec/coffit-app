@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.3 (pedido por la app + WhatsApp se abre solo).
+> Última actualización: 17 nov 2026, versión V10.4 (arreglo del ingreso al panel en Android).
 
 ---
 
@@ -166,6 +166,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 17 nov 2026 | V10.4 | Panel: arreglado el ingreso que se quedaba trabado en el celular Android de Coffit (el login era correcto, pero `start()` se llamaba dentro de `onAuthStateChange` y supabase-js se bloqueaba; ahora se difiere con `setTimeout` y no corre dos veces). Mensaje "Ingresando…". |
 | 17 nov 2026 | V10.3 | A pedido de David, WhatsApp vuelve a abrirse solo al enviar (para que el cliente lo envíe), pero el pedido igual se guarda y llega al panel. |
 | 17 nov 2026 | V10.2 | El pedido llega por la app al panel y WhatsApp queda opcional (antes dependía de que el cliente tocara Enviar en WhatsApp; el pedido #13 de Jimena llegó al panel pero no al WhatsApp). Si falla el internet, se pide enviarlo por WhatsApp. |
 | 17 nov 2026 | V10.1 | Tras enviar el pedido: carrito vacío y pantalla "¡Pedido enviado!" en vez del formulario. La app se recarga sola cuando hay versión nueva (el pedido #12 se hizo desde una pestaña vieja sin seguimiento). |

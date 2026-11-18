@@ -139,8 +139,9 @@ let hist={}, orders=[], tab='nuevo', soundOn=false, ctx=null, fresh=new Set();
 /* ---------- Acceso ---------- */
 const lmsg=(t,ok)=>{$('#lMsg').textContent=t;$('#lMsg').className='msg '+(ok?'ok':'err')};
 $('#fLogin').onsubmit=async e=>{
-  e.preventDefault(); lmsg('');
+  e.preventDefault(); lmsg('Ingresando…',true); $('#bIn').disabled=true;
   const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim().toLowerCase(),password:$('#pw').value});
+  $('#bIn').disabled=false;
   if(error){lmsg(/confirm/i.test(error.message)?'Primero confirma tu correo: revisa la bandeja de Gmail (o Spam) y abre el enlace de Supabase.':'Correo o contraseña incorrectos. Si es la primera vez, toca "Primera vez: crear el acceso".');return}
   start();
 };
@@ -157,12 +158,17 @@ $('#bSignup').onclick=async()=>{
 };
 $('#bOut').onclick=async()=>{await sb.auth.signOut();location.reload()};
 
+let started=false, starting=false;
 async function start(){
+  if(started||starting)return; starting=true;
+  try{
   const {data:{session}}=await sb.auth.getSession(); if(!session)return;
   const {data:ok}=await sb.rpc('is_staff');
   if(!ok){await sb.auth.signOut();$('#vLogin').classList.remove('hidden');$('#vApp').classList.add('hidden');lmsg('Este correo no está autorizado para el panel o aún no está confirmado.');return}
   $('#vLogin').classList.add('hidden'); $('#vApp').classList.remove('hidden');
+  started=true;
   await load(); subscribe(); setInterval(draw,30000);
+  } finally { starting=false }
 }
 
 /* ---------- Datos ---------- */
@@ -276,7 +282,8 @@ function draw(){
   $('#top5').textContent=top.length?'Lo más pedido hoy: '+top.map(([n,c])=>`${n} (${c})`).join(' · '):'';
 }
 
-sb.auth.onAuthStateChange((ev)=>{ if(ev==='SIGNED_IN') start() });
+// Ojo: no llamar a Supabase dentro de este aviso (se traba en algunos celulares); se difiere con setTimeout
+sb.auth.onAuthStateChange((ev)=>{ if(ev==='SIGNED_IN') setTimeout(start,0) });
 start();
 </script>
 </body>

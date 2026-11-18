@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.4 (arreglo del ingreso al panel en Android).
+> Última actualización: 17 nov 2026, versión V10.5 (elegir "esto o aquello" en los productos).
 
 ---
 
@@ -89,6 +89,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - Combo tarde (promo del martes), S/ 22: café a elegir (capuccino, latte, americano, mocaccino o iced americano) + porción de torta (chocolate, tres leches, cheesecake de fresa, cheesecake de maracuyá o pie de limón; sin tiramisú por precio).
 - Combo antojo: wrap o sándwich + frappé 12 oz (−S/ 3).
 - Promo por día; el miércoles, el 2.º frappé de 12 oz sale a mitad de precio (se calcula sola en el carrito).
+- Elecciones obligatorias (mapa `CHOICES` en `index.html`, sin opción marcada; el botón dice "Elige una opción arriba" hasta elegir; la elección va al carrito, WhatsApp y panel): Desayuno al paso (jugo surtido o café americano), Desayuno criollo (tamal o humita), Desayuno clásico (tostadas o pan integral), Ensalada de frutas (yogurt griego o sbelt), Panqueques Coffit (fudge o manjar), Panqueques americanos (maple, fudge o manjar), Hamburguesa de pollo (deshilachado o pechuga), Pasta al pesto (pollo, lomo saltado o carne molida), Waffle tropical (fudge o manjar), Waffles de avena (miel o maple).
 - Agregados: 16 oz, versión fría +2, helado +3, fruta +1, masa madre +2, papas +2, adicionales +1, extra carne +8, matcha +3, jarabes +2.
 
 **Fuentes de código en el chat** (en `/home/claude` del entorno de Claude; no persisten entre chats): `coffit_v6_template.html` (plantilla con los marcadores `__MENU__`, `__PHOTOS__`, `__PIDX__`, `__LOGO_WORD__`, `__LOGO_SEAL__`), `menu.json`, `img/`, `build_img.py`. **En un chat nuevo, partir del `index.html` del repo o de la carpeta**, que ya trae todo incluido.
@@ -166,6 +167,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 18 nov 2026 | V10.5 | Productos con "o" en la carta piden elegir una opción (10 productos, mapa `CHOICES`). |
 | 17 nov 2026 | V10.4 | Panel: arreglado el ingreso que se quedaba trabado en el celular Android de Coffit (el login era correcto, pero `start()` se llamaba dentro de `onAuthStateChange` y supabase-js se bloqueaba; ahora se difiere con `setTimeout` y no corre dos veces). Mensaje "Ingresando…". |
 | 17 nov 2026 | V10.3 | A pedido de David, WhatsApp vuelve a abrirse solo al enviar (para que el cliente lo envíe), pero el pedido igual se guarda y llega al panel. |
 | 17 nov 2026 | V10.2 | El pedido llega por la app al panel y WhatsApp queda opcional (antes dependía de que el cliente tocara Enviar en WhatsApp; el pedido #13 de Jimena llegó al panel pero no al WhatsApp). Si falla el internet, se pide enviarlo por WhatsApp. |

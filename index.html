@@ -339,8 +339,22 @@ let mode='mesa', group='desayunos', cart=[];
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1500)}
 
 /* ---------- Opciones de cada producto ---------- */
+// Productos de la carta con "esto o aquello": el cliente debe elegir uno (obligatorio, sin opción marcada de antemano)
+const CHOICES={
+  'Desayuno al paso':[['Bebida',['Jugo surtido','Café americano']]],
+  'Desayuno criollo':[['Elige',['Tamal','Humita']]],
+  'Desayuno clásico':[['Pan',['Tostadas','Pan integral']]],
+  'Ensalada de frutas':[['Yogurt',['Yogurt griego','Sbelt']]],
+  'Panqueques Coffit':[['Salsa',['Fudge','Manjar']]],
+  'Panqueques americanos clásicos':[['Salsa',['Maple','Fudge','Manjar']]],
+  'Hamburguesa de pollo':[['Pollo',['Pollo deshilachado','Pechuga']]],
+  'Pasta al pesto':[['Acompañada con',['Pollo','Lomo saltado','Carne molida']]],
+  'Waffle tropical':[['Salsa',['Fudge','Manjar']]],
+  'Waffles de avena':[['Endulzado con',['Miel','Maple']]]
+};
 function options(m){
   const o=[], n=m.n, c=m.c;
+  (CHOICES[n]||[]).forEach(([t,v],j)=>o.push({k:'ch'+j,t:'Elige: '+t.toLowerCase().replace(/^elige$/,'una opción'),one:1,req:1,v:v.map(t=>({t,p:0}))}));
   if(m.l && c!=='Postres') o.push({k:'size',t:'Tamaño',one:1,v:[{t:n==='Açaí bowl'?'12 oz · 5 toppings':'12 oz',p:0},{t:n==='Açaí bowl'?'16 oz · 7 toppings':'16 oz',p:m.l-m.p}]});
   if(c==='Postres' && m.l) o.push({k:'size',t:'Presentación',one:1,v:[{t:'Porción',p:0},{t:'Torta entera · con 24 h de anticipación',p:m.l-m.p}]});
   if(c==='Latte sin café' && !/iced/i.test(n)) o.push({k:'temp',t:'Temperatura',one:1,v:[{t:'Caliente',p:0},{t:'Fría',p:2}]});
@@ -439,7 +453,7 @@ function pairFor(m){
 function openItem(m){
   if(m.combo)return openCombo(m);
   const opts=options(m), sel={}; let qty=1, note='';
-  opts.forEach(o=>sel[o.k]=o.one?[0]:[]);
+  opts.forEach(o=>sel[o.k]=o.one&&!o.req?[0]:[]);
   const unit=()=>m.p+opts.reduce((s,o)=>s+sel[o.k].reduce((a,i)=>a+o.v[i].p,0),0);
   const ok=()=>opts.every(o=>!o.req||sel[o.k].length===o.req);
   const pair=pairFor(m);
@@ -447,7 +461,7 @@ function openItem(m){
     openSheet(`<div class="hero">${vis(m)}</div><h3>${m.n}</h3>${m.d?`<p class="lead">${m.d}</p>`:''}`+
       opts.map(o=>`<div class="lbl">${o.t}${o.max?' <small>· elige '+o.max+'</small>':''}</div>`+o.v.map((v,i)=>`<button class="opt ${sel[o.k].includes(i)?'on':''}" data-o="${o.k}" data-i="${i}"><span>${v.t}</span><span class="r">${v.p?'+ '+money(v.p):''}</span></button>`).join('')).join('')+
       `<div class="lbl">Indicaciones <small>· opcional</small></div><textarea id="nt" rows="2" placeholder="Ej.: sin cebolla, poco hielo">${note}</textarea>`+
-      `<div class="qrow"><div class="step"><button id="mn" aria-label="Menos">−</button><span>${qty}</span><button id="pl" aria-label="Más">+</button></div><button class="cta" id="addb" ${ok()?'':'disabled style="opacity:.45"'}>Agregar · ${money(unit()*qty)}</button></div>`+
+      `<div class="qrow"><div class="step"><button id="mn" aria-label="Menos">−</button><span>${qty}</span><button id="pl" aria-label="Más">+</button></div><button class="cta" id="addb" ${ok()?'':'disabled style="opacity:.45"'}>${ok()?'Agregar · '+money(unit()*qty):'Elige una opción arriba'}</button></div>`+
       (pair?`<p class="hint">Va bien con ${pair.n} (${money(pair.p)}). Puedes sumarlo desde tu pedido.</p>`:''));
     const keep=()=>note=$('#nt').value;
     $$('#sc .opt').forEach(b=>b.onclick=()=>{keep();const o=opts.find(x=>x.k===b.dataset.o),i=+b.dataset.i,s=sel[o.k];

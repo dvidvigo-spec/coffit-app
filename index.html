@@ -536,7 +536,7 @@ function checkout(){
     `<div class="lbl">Celular</div><input class="f" id="cel" inputmode="tel" value="${s.cel||''}" placeholder="9XX XXX XXX" autocomplete="tel">`+extra+
     `<div class="lbl">Pago</div><button class="opt on" data-p="Yape o Plin"><span>Yape o Plin</span><span class="r"></span></button><button class="opt" data-p="Efectivo"><span>Efectivo</span><span class="r"></span></button>`+
     `<div id="cash" hidden><div class="lbl">¿Con cuánto pagas?</div><input class="f" id="vu" inputmode="decimal" placeholder="Ej.: 50"></div>`+
-    `<div class="qrow"><button class="cta go" id="send">Enviar pedido</button></div><p class="hint" id="msg">Tu pedido llega directo a Coffit y podrás seguirlo en vivo desde la app.</p>`);
+    `<div class="qrow"><button class="cta go" id="send">Enviar pedido por WhatsApp</button></div><p class="hint" id="msg">Se abre WhatsApp con tu pedido listo para enviar a Coffit y podrás seguirlo en vivo desde la app.</p>`);
   const g=$('#geo'); if(g)g.onclick=()=>{
     if(!navigator.geolocation){$('#geomsg').textContent='Tu celular no permite compartir la ubicación. Escribe bien la dirección y una referencia.';return}
     $('#geomsg').textContent='Buscando tu ubicación…';
@@ -561,13 +561,14 @@ function checkout(){
     if(mode==='delivery')L.push('Delivery: '+(fee()?money(fee()):'gratis'));
     L.push('*Total: '+money(total())+'*','Pago: '+pay+(pay==='Efectivo'&&v('vu')?' (paga con S/ '+v('vu')+')':''));
     const tok=(crypto.randomUUID?crypto.randomUUID():'10000000-1000-4000-8000-100000000000'.replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16)));
+    const url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
+    { const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove(); } // abre WhatsApp en el mismo toque
     const btn=$('#send'), lbl=btn.textContent; btn.disabled=true; btn.textContent='Enviando…';
     const ok=await saveOrder({token:tok,modo:mode,nombre:v('nom'),celular:v('cel'),mesa:v('mesa')||null,hora_recojo:v('hora')||null,direccion:v('dir')||null,referencia:v('ref')||null,ubicacion:loc,pago:pay,paga_con:v('vu')||null,subtotal:subtotal(),taper:tapers(),delivery:fee(),descuento:wedOff(),total:total(),items:cart.map(i=>({id:i.ref,nombre:i.name,detalle:i.det,nota:i.note,precio:i.unit,cantidad:i.qty}))});
-    const url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
     if(!ok){ // no se pudo guardar: el cliente debe mandarlo por WhatsApp para que no se pierda
       btn.disabled=false; btn.textContent=lbl;
-      openSheet(`<div class="done"><div class="ok" style="background:var(--alert)">!</div><h3>Tu internet falló</h3>
-        <p class="lead">No pudimos registrar tu pedido. Para que no se pierda, <b>envíalo por WhatsApp</b> con este botón; el mensaje ya está escrito.</p>
+      openSheet(`<div class="done"><div class="ok" style="background:var(--alert)">!</div><h3>Envíalo por WhatsApp</h3>
+        <p class="lead">Tu internet falló y no pudimos registrar el pedido en la app. Para que no se pierda, <b>toca Enviar en WhatsApp</b>; el mensaje ya está escrito.</p>
         <div class="qrow"><a class="cta" style="text-decoration:none;display:block;text-align:center" id="waSend" href="${url}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
         <p class="hint">Tu carrito sigue guardado por si prefieres intentar de nuevo.</p></div>`);
       $('#waSend').onclick=()=>{ store.set('coffit_last',cart.slice()); cart.length=0; drawCart(); refresh(); setTimeout(closeSheet,400) };
@@ -577,9 +578,10 @@ function checkout(){
     store.set('coffit_last',cart.slice()); store.set('coffit_stamps',store.get('coffit_stamps',0)+1);
     cart.length=0; drawCart(); refresh();
     openSheet(`<div class="done"><div class="ok">✓</div><h3>¡Pedido recibido!</h3>
-      <p class="lead">Coffit ya tiene tu pedido. Te avisaremos aquí cuando se esté preparando y cuando esté listo.</p>
+      <p class="lead">Último paso: toca <b>Enviar</b> en WhatsApp para confirmar tu pedido con Coffit.</p>
+      <p class="lead">Aquí verás en vivo cuando se esté preparando y cuando esté listo.</p>
       <div class="qrow"><button class="cta" id="seeTrack">Ver mi pedido</button></div>
-      <p class="hint">¿Quieres comentarnos algo? <a href="${url}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a> (opcional).</p></div>`);
+      <p class="hint">¿No se abrió WhatsApp? <a href="${url}" target="_blank" rel="noopener">Toca aquí para enviarlo</a>.</p></div>`);
     $('#seeTrack').onclick=()=>{closeSheet();show('home');pollTrack()};
     pollTrack();
   };

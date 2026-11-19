@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.6 (8 fotos nuevas de sándwiches y desayunos).
+> Última actualización: 17 nov 2026, versión V10.7 (pedidos solo hasta las 10:30 p. m.).
 
 ---
 
@@ -82,6 +82,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 
 **Reglas de negocio actuales** (son propuestas y falta que el dueño las confirme):
 - Táper: S/ 1 por táper, solo en recoger o delivery (no en mesa). Cada producto lleva 1 táper salvo los del mapa `TAPERS` (función `tapN(i)`): Club sándwich 2, Pollo a la plancha 2, Desayuno al paso 2, Desayuno americano 3, Desayuno criollo 4, Desayuno del bosque 4, Desayuno Coffit 4, Desayuno clásico 1, Desayuno fit 3, Desayuno tropical 3. **Toda la categoría "Bubble tea" va sin táper**. Para cambiar uno, editar `TAPERS` en `index.html`. Constante `TAPER` en `index.html`; se muestra bajo cada producto, como línea "Tápers" en el resumen y en el WhatsApp, y se guarda en `pedidos.taper`. El delivery gratis se calcula sobre el subtotal sin tápers.
+- **Horario de pedidos:** de 6:00 a. m. (supuesto, falta confirmar la apertura) a **10:30 p. m.** todos los días, hora de Lima. En la app: `OPEN_MIN`/`CLOSE_MIN`, `isOpen()`; arriba a la derecha dice "Abierto hasta las 10:30 p. m." o "Ya cerramos por hoy"; fuera de horario "Continuar" y "Enviar" muestran "Ya no recibimos pedidos" (el carrito se guarda); la hora de recojo no pasa de las 22:30. En Supabase la política "clientes crean pedidos" también rechaza pedidos fuera de 06:00–22:30 (Lima).
 - Delivery S/ 4, gratis desde S/ 45 **solo en Virú Pueblo** (se avisa en el modo Delivery y en el carrito; la app no valida la zona, la confirma el personal).
 - Delivery: se pide dirección exacta (calle, número o Mz/Lote, sector; mínimo 8 caracteres) y un botón opcional "Compartir mi ubicación actual" (GPS del celular) que agrega un link de Google Maps al WhatsApp, a `pedidos.ubicacion` y al botón "Mapa" del panel.
 - Los avisos de los modos (Recoger/Delivery) no mencionan los tápers; el cobro se ve solo en el carrito.
@@ -141,7 +142,7 @@ Git está instalado en `C:\Program Files\Git`.
 - [ ] Número de Yape/Plin para pagar (en la app quedó sin número a propósito).
 - [ ] Precios de combos y delivery (S/ 4, gratis desde S/ 45 solo en Virú Pueblo).
 - [ ] Promos por día, sobre todo la del miércoles.
-- [ ] Horario real por día (hoy dice "abierto hasta las 11 p. m.", que es un supuesto).
+- [ ] Hora de apertura real (el cierre de pedidos ya es 10:30 p. m.; la apertura de 6:00 a. m. es un supuesto, en `OPEN_MIN` y en la política de `pedidos`).
 - [ ] Fotos de los productos muy vendidos que no tienen foto: pollo a la plancha, ensalada de frutas, jugo surtido, frapuccino caramel, tequeños, batido de fresa, lomo saltado, ensalada César, cheesecakes y tiramisú.
 - [ ] Confirmar si la foto turquesa es "Espuma de mar" y la roja es "Iced tea frutos rojos".
 - [ ] Decidir qué hacer con los 87 productos de poca venta.
@@ -167,6 +168,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 19 nov 2026 | V10.7 | Pedidos solo hasta las 10:30 p. m. (app y base de datos); arriba dice "Abierto hasta las 10:30 p. m.". |
 | 18 nov 2026 | V10.6 | Fotos nuevas enviadas por David: Chanchito al horno, Capresse, Sándwich mixto, Chicken caprese (reemplaza la anterior), Sándwich con lomo, Sándwich fit, Desayuno clásico y Desayuno tropical. |
 | 18 nov 2026 | V10.5 | Productos con "o" en la carta piden elegir una opción (10 productos, mapa `CHOICES`). |
 | 17 nov 2026 | V10.4 | Panel: arreglado el ingreso que se quedaba trabado en el celular Android de Coffit (el login era correcto, pero `start()` se llamaba dentro de `onAuthStateChange` y supabase-js se bloqueaba; ahora se difiere con `setTimeout` y no corre dos veces). Mensaje "Ingresando…". |

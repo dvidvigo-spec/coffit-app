@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.5 (elegir "esto o aquello" en los productos).
+> Última actualización: 17 nov 2026, versión V10.6 (8 fotos nuevas de sándwiches y desayunos).
 
 ---
 
@@ -64,7 +64,7 @@ El SQL inicial está guardado en el editor SQL de Supabase. Lo probé el 16 nov:
 
 Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - `MENU`: la carta en JSON, que sirve de respaldo si Supabase no responde. Al abrir, `syncMenu()` la reemplaza con los datos de `productos`.
-- `PHOTOS`: 51 fotos en base64 (360 px). `PIDX` asigna el nombre del producto a su foto. Hoy 62 productos tienen foto.
+- `PHOTOS`: 58 fotos en base64 (360 px, recorte cuadrado). `PIDX` asigna el nombre del producto a su foto. Hoy 69 productos tienen foto.
 - El logo real (wordmark y sello) en base64, en el color espresso.
 
 **Pantallas:**
@@ -167,6 +167,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 18 nov 2026 | V10.6 | Fotos nuevas enviadas por David: Chanchito al horno, Capresse, Sándwich mixto, Chicken caprese (reemplaza la anterior), Sándwich con lomo, Sándwich fit, Desayuno clásico y Desayuno tropical. |
 | 18 nov 2026 | V10.5 | Productos con "o" en la carta piden elegir una opción (10 productos, mapa `CHOICES`). |
 | 17 nov 2026 | V10.4 | Panel: arreglado el ingreso que se quedaba trabado en el celular Android de Coffit (el login era correcto, pero `start()` se llamaba dentro de `onAuthStateChange` y supabase-js se bloqueaba; ahora se difiere con `setTimeout` y no corre dos veces). Mensaje "Ingresando…". |
 | 17 nov 2026 | V10.3 | A pedido de David, WhatsApp vuelve a abrirse solo al enviar (para que el cliente lo envíe), pero el pedido igual se guarda y llega al panel. |

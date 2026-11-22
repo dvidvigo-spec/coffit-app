@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.7 (pedidos solo hasta las 10:30 p. m.).
+> Última actualización: 17 nov 2026, versión V10.8 (5 fotos nuevas de waffles, panqueques y ensalada de frutas).
 
 ---
 
@@ -64,7 +64,7 @@ El SQL inicial está guardado en el editor SQL de Supabase. Lo probé el 16 nov:
 
 Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - `MENU`: la carta en JSON, que sirve de respaldo si Supabase no responde. Al abrir, `syncMenu()` la reemplaza con los datos de `productos`.
-- `PHOTOS`: 58 fotos en base64 (360 px, recorte cuadrado). `PIDX` asigna el nombre del producto a su foto. Hoy 69 productos tienen foto.
+- `PHOTOS`: 62 fotos en base64 (360 px, recorte cuadrado). `PIDX` asigna el nombre del producto a su foto. Hoy 73 de 188 productos tienen foto (faltan sobre todo bebidas y postres). Para agregar fotos: recortar a 360×360 JPEG q80 y sumar a `PHOTOS` y `PIDX` (ojo: `PIDX` se escribe como `const PIDX = {...}`).
 - El logo real (wordmark y sello) en base64, en el color espresso.
 
 **Pantallas:**
@@ -168,6 +168,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 21 nov 2026 | V10.8 | Fotos nuevas (hechas por David con ChatGPT): Waffle Oreo, Panqueques americanos clásicos, Waffle tropical (reemplaza la anterior, también en la tarjeta Desayunos del inicio), Panqueques Coffit y Ensalada de frutas. |
 | 19 nov 2026 | V10.7 | Pedidos solo hasta las 10:30 p. m. (app y base de datos); arriba dice "Abierto hasta las 10:30 p. m.". |
 | 18 nov 2026 | V10.6 | Fotos nuevas enviadas por David: Chanchito al horno, Capresse, Sándwich mixto, Chicken caprese (reemplaza la anterior), Sándwich con lomo, Sándwich fit, Desayuno clásico y Desayuno tropical. |
 | 18 nov 2026 | V10.5 | Productos con "o" en la carta piden elegir una opción (10 productos, mapa `CHOICES`). |

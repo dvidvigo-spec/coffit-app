@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 17 nov 2026, versión V10.8 (5 fotos nuevas de waffles, panqueques y ensalada de frutas).
+> Última actualización: 21 nov 2026, versión V11 (módulo Cuadre de caja en /caja).
 
 ---
 
@@ -27,6 +27,7 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 | Clave Supabase en la app | `sb_publishable_tJNmh5TnRt0gNB2Zo4C-kQ_Jnawdy9J` (clave publicable, segura en el navegador; la seguridad la da RLS). **Nunca** poner la `service_role`/secret key en la app. |
 | WhatsApp oficial | **944 667 516** (`wa.me/51944667516`). Recibe los pedidos y el botón de contacto. El 941 112 979 de la carta ya NO es el oficial. |
 | Panel interno (personal) | https://coffit-app.vercel.app/panel/ — login con correo autorizado en `public.staff` (hoy: coffit.cafeteria1@gmail.com). La contraseña la pone y guarda David; nunca va en código ni en este archivo. |
+| Cuadre de caja (personal) | https://coffit-app.vercel.app/caja/ — misma cuenta del panel. Botón "Caja" en el panel y "Pedidos" en la caja. |
 | Vista previa en Claude | Artifact "Coffit Pide Aquí", https://claude.ai/artifact/C1Ec74V8fhmQCLt61ctMwL (ahí Supabase no conecta; usa la carta incluida). |
 
 **Supabase desde Claude:** el conector de Supabase está conectado a Claude (17 nov 2026). Claude puede consultar y migrar la base directo (`execute_sql`, `apply_migration`, `get_advisors`) también desde el celular, sin Chrome. Project id: `curlxsugmcjurewfngqm`.
@@ -54,6 +55,10 @@ La app de pedidos propia de **Coffit Cafetería** (Calle Libertad 316, Virú, La
 - `pedidos`: el personal (usuario autenticado con `is_staff()`) puede **leer y actualizar** (cambiar estado). La tabla está en la publicación `supabase_realtime` (pedidos llegan al panel al instante).
 - `pedidos`: la clave anónima solo puede **insertar** (con total entre 0 y 5000, y de 1 a 60 ítems). **Nadie de afuera puede leer los pedidos**; se ven en el panel de Supabase, en Table Editor → pedidos.
 
+**`public.cuadres_caja`**: cuadre por turno. `id · fecha date · turno ('manana'|'tarde') · responsable · caja_inicial · yape · efectivo · tarjeta · cambio (Yape recibido que se dio en efectivo) · gastos jsonb [{concepto,monto,pago:'efectivo'|'yape'}] · hay (efectivo contado) · nota · total_ventas · total_gastos · esperado · diferencia · cerrado · creado · actualizado`, único por (fecha, turno). El trigger `calc_cuadre()` calcula: total_ventas = yape+efectivo+tarjeta; total_gastos = solo gastos pagados en efectivo; **esperado = caja_inicial + efectivo − gastos en efectivo − cambio**; diferencia = hay − esperado (+ sobra, − falta).
+**`public.cierres_dia`**: `fecha PK · venta_tumisoft · nota` (total del día en TumiSoft para comparar). Venta real del día = ventas de ambos turnos − cambios.
+RLS en ambas: solo `is_staff()` lee, crea y edita; nadie borra desde la app.
+
 **Para cambiar precios u ocultar productos sin tocar código:** en Supabase, Table Editor → `productos`, editar `precio` o poner `activo = false`. La app toma los cambios al abrirse.
 
 El SQL inicial está guardado en el editor SQL de Supabase. Lo probé el 16 nov: leer la carta y crear un pedido funcionan, leer pedidos queda bloqueado, y el pedido de prueba se borró.
@@ -75,6 +80,7 @@ Es un solo archivo HTML con CSS y JS propios, sin frameworks. Trae dentro:
 - **Versión nueva automática:** la app compara el ETag de la página al abrirse y al volver a la pestaña; si hay una versión publicada más nueva, recarga sola (solo si el carrito está vacío y no hay ventana abierta). Así los celulares con la pestaña vieja no se quedan sin las mejoras.
 - **Seguimiento del pedido (cliente):** al enviar, la app guarda el token en el celular (`coffit_track`) y en Inicio muestra una tarjeta "Tu pedido #N" con barra de 4 pasos (Recibido → Preparando → Listo para recoger / En camino / Listo → Entregado/Servido). Consulta `estado_pedido` cada 8 s y al volver a la app; avisa con toast y vibración cuando cambia. Se oculta tras 12 h o con "Ocultar" al terminar.
 - **Panel interno** (`panel/index.html`, archivo aparte, usa supabase-js 2.45.4 de jsDelivr): login, columnas Nuevos / Preparando / Listos-En camino / Entregados hoy (pestañas en celular), alerta al entrar un pedido (tocar "Activar alertas" una vez): sonido "ding-dong" con un `<audio>` WAV generado en el navegador (en iPhone se oye aunque esté en silencio), que se repite cada 3 s mientras haya pedidos en "Nuevos"; franja roja parpadeante "Pedido nuevo"; pantalla siempre encendida (Wake Lock) y recarga al volver a la pestaña. Límite: con la pantalla bloqueada o el navegador cerrado no suena (para eso haría falta push con PWA), botones de estado, WhatsApp al cliente, cancelar, y resumen del día (pedidos, ventas, ticket, lo más pedido).
+- **Cuadre de caja** (`caja/index.html`, archivo aparte, mismo login que el panel): fecha arriba (‹ › o calendario), pestañas ☀️ Mañana / 🌙 Tarde / 📊 Día. En cada turno la encargada escribe: quién cuadra, caja inicial (se llena sola: mañana = lo contado anoche en la tarde; tarde = lo contado en la mañana), Yape/Plin, efectivo, tarjeta, gastos (concepto + monto, botones rápidos y cambio Efectivo/Yape por gasto), cambio Yape→efectivo y lo que hay contado. La app muestra el cálculo como en el cuaderno y el resultado (✓ cuadra / sobra / falta). Acepta coma o punto decimal. Guarda borrador en el celular hasta tocar "Guardar cuadre". Pestaña Día: ventas por turno y medio de pago, venta real, comparación con el total de TumiSoft (se escribe a mano), falta/sobra de cada turno, efectivo que queda, botón "Enviar resumen por WhatsApp" e historial de 14 días con el acumulado. Probado con el cuaderno del miércoles 18 nov: mañana falta S/ 57, tarde sobra S/ 1, venta real S/ 1,557 = TumiSoft.
 - **Ventanas (sheets)** de producto, combo, carrito y datos: botón X redondo arriba a la derecha (`#xclose`, fijo al bajar) para cerrarlas.
 - **Botón flotante de WhatsApp** (abajo a la izquierda, con rebote).
 
@@ -154,6 +160,7 @@ Git está instalado en `C:\Program Files\Git`.
 - [ ] Segundo WhatsApp: wa.me solo abre un chat a la vez. Opciones: botón "enviar también al 2.º número" o (recomendado) el panel en tiempo real en varios celulares.
 - [ ] Club Coffit: que el cliente vea sus sellos reales (hoy el conteo oficial está en el panel; la app del cliente muestra un conteo local). Solo cuentan pedidos hechos por la app y marcados como Entregado.
 - [ ] Separar las fotos del HTML (Supabase Storage o carpeta `/img` en el repo) para que cargue más rápido.
+- [ ] Caja: traer las ventas de TumiSoft automáticamente. TumiSoft no tiene API pública conocida y emite muchos comprobantes de noche, así que no separa mañana/tarde. Opción siguiente: subir el Excel/reporte diario de TumiSoft y que la caja lo lea (falta un ejemplo del reporte).
 - [ ] Dominio propio (opcional) y revisar si pasar a un plan pagado de Vercel cuando haya uso comercial.
 
 ---
@@ -168,6 +175,7 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 21 nov 2026 | V11 | Cuadre de caja en /caja: turnos mañana y tarde, cálculo automático (caja inicial + efectivo − gastos en efectivo − cambio), falta/sobra, resumen del día con comparación TumiSoft, WhatsApp e historial. Tablas `cuadres_caja` y `cierres_dia` con RLS para staff. Botón "Caja" en el panel. |
 | 21 nov 2026 | V10.8 | Fotos nuevas (hechas por David con ChatGPT): Waffle Oreo, Panqueques americanos clásicos, Waffle tropical (reemplaza la anterior, también en la tarjeta Desayunos del inicio), Panqueques Coffit y Ensalada de frutas. |
 | 19 nov 2026 | V10.7 | Pedidos solo hasta las 10:30 p. m. (app y base de datos); arriba dice "Abierto hasta las 10:30 p. m.". |
 | 18 nov 2026 | V10.6 | Fotos nuevas enviadas por David: Chanchito al horno, Capresse, Sándwich mixto, Chicken caprese (reemplaza la anterior), Sándwich con lomo, Sándwich fit, Desayuno clásico y Desayuno tropical. |

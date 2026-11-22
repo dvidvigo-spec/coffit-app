@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Coffit · Cuadre de caja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --caramel:#B98D62; --caramel-soft:#F3E7D9; --espresso:#2A1D16; --milk:#FBF7F2; --paper:#fff;
+  --leaf:#5E7B4C; --leaf-soft:#E4ECDD; --blue:#2F6690; --blue-soft:#DDE9F2; --muted:#7C6B5E; --line:#EADFD2; --alert:#B04A32; --alert-soft:#F6E1DB;
+  --display:'Marcellus',Georgia,serif; --body:'Figtree',system-ui,sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--milk);color:var(--espresso);font-family:var(--body);font-size:15px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2.5px solid var(--caramel);outline-offset:2px}
+.hidden{display:none!important}
+.num{font-variant-numeric:tabular-nums}
+/* Login */
+.login{max-width:380px;margin:12vh auto 0;padding:0 18px}
+.login h1{font-family:var(--display);font-weight:400;font-size:34px;margin:0 0 4px}
+.login p{color:var(--muted);margin:0 0 18px;line-height:1.45}
+.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px;font-size:16px;font-family:inherit;margin-bottom:10px;background:#fff;color:var(--espresso)}
+.btn{width:100%;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:16px;background:var(--espresso);color:var(--milk)}
+.btn:disabled{opacity:.6}
+.pwrap{position:relative}.pwrap .f{padding-right:96px}
+.eye{position:absolute;right:6px;top:6px;height:38px;padding:0 12px;border:0;border-radius:9px;background:var(--caramel-soft);color:var(--espresso);font-weight:700;font-size:13.5px}
+.msg{font-size:13.5px;margin-top:10px;line-height:1.45}
+.msg.err{color:var(--alert)} .msg.ok{color:var(--leaf)}
+/* Header */
+header{position:sticky;top:0;z-index:5;background:var(--milk);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-size:22px;letter-spacing:.12em}
+.brand small{font-family:var(--body);letter-spacing:0;font-size:12px;color:var(--muted);margin-left:6px}
+.hbtns{display:flex;gap:6px}
+.sbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-weight:700;font-size:13px;color:var(--espresso);text-decoration:none}
+.daterow{display:flex;align-items:center;gap:8px;margin-top:10px}
+.daterow button{width:44px;height:44px;border:1px solid var(--line);background:#fff;border-radius:12px;font-size:18px;font-weight:800;color:var(--espresso)}
+.daterow .d{flex:1;text-align:center;font-weight:800;font-size:16px;position:relative}
+.daterow .d small{display:block;font-weight:600;font-size:12px;color:var(--muted);text-transform:none}
+.daterow input[type=date]{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.tabs{display:flex;gap:6px;margin-top:10px}
+.tab{flex:1;border:0;background:#EDE3D6;border-radius:12px;padding:11px 6px;font-weight:800;font-size:14px;color:var(--muted)}
+.tab.on{background:var(--espresso);color:var(--milk)}
+.tab i{font-style:normal;margin-left:4px}
+main{max-width:560px;margin:0 auto;padding:14px 16px 120px}
+/* Cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.card h3 b{font-size:15px;letter-spacing:0;text-transform:none;color:var(--espresso)}
+.row{display:flex;align-items:center;gap:10px;padding:6px 0}
+.row label{flex:1;font-weight:700;font-size:15px}
+.row label small{display:block;font-weight:500;color:var(--muted);font-size:12.5px;line-height:1.35}
+.money{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:var(--milk);width:150px;flex:none}
+.money:focus-within{border-color:var(--caramel);background:#fff}
+.money span{padding-left:11px;color:var(--muted);font-weight:700;font-size:14px}
+.money input{width:100%;border:0;background:transparent;padding:12px 11px 12px 6px;font-size:18px;font-weight:800;font-family:inherit;color:var(--espresso);text-align:right;font-variant-numeric:tabular-nums}
+.money input:focus{outline:none}
+.money.auto{background:var(--caramel-soft);border-color:transparent}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 0;line-height:1.4}
+.sum{display:flex;justify-content:space-between;border-top:1px dashed var(--line);margin-top:8px;padding-top:10px;font-weight:800;font-size:16px}
+/* Gastos */
+.g{display:flex;gap:6px;align-items:center;padding:5px 0}
+.g .f{margin:0;padding:11px;font-size:15px;flex:1;min-width:0}
+.g .money{width:112px}
+.g .money input{font-size:16px;padding:11px 9px 11px 4px}
+.pill{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:0 8px;height:44px;font-size:12px;font-weight:800;color:var(--muted);flex:none;width:58px;line-height:1.1}
+.pill.yape{background:#EFE6F7;border-color:#C9B4DF;color:#5B3F7E}
+.del{border:0;background:none;color:var(--alert);font-size:22px;width:32px;height:44px;flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px dashed var(--caramel);background:var(--caramel-soft);color:#5C4128;border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px}
+.add{width:100%;margin-top:8px;border:1.5px dashed var(--line);background:none;border-radius:12px;padding:12px;font-weight:800;color:var(--espresso);font-size:14px}
+/* Resultado */
+.calc{font-size:14px;line-height:1.9;font-variant-numeric:tabular-nums}
+.calc div{display:flex;justify-content:space-between}
+.calc .m{color:var(--alert)}
+.calc .eq{border-top:1.5px solid var(--espresso);margin-top:4px;padding-top:4px;font-weight:800;font-size:17px}
+.verdict{border-radius:16px;padding:16px;text-align:center;margin-top:12px;background:#F1ECE6}
+.verdict b{display:block;font-size:30px;font-family:var(--display);font-weight:400;margin-top:2px}
+.verdict span{font-size:13.5px;font-weight:700}
+.verdict.ok{background:var(--leaf-soft);color:#2F4A22}
+.verdict.over{background:var(--blue-soft);color:#1E4766}
+.verdict.short{background:var(--alert-soft);color:#7a2c1c}
+.f.note{min-height:64px;resize:vertical;margin:0}
+.saveBar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:linear-gradient(transparent,var(--milk) 30%);padding:18px 16px calc(14px + env(safe-area-inset-bottom))}
+.saveBar .in{max-width:560px;margin:0 auto}
+.saveBar .st{text-align:center;font-size:12.5px;color:var(--muted);margin-top:6px;font-weight:600}
+/* Día */
+.kv{display:flex;justify-content:space-between;padding:7px 0;font-size:15px;border-bottom:1px solid #F3ECE3}
+.kv:last-child{border-bottom:0}
+.kv b{font-variant-numeric:tabular-nums}
+.tag{font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 9px}
+.tag.ok{background:var(--leaf-soft);color:#2F4A22}.tag.over{background:var(--blue-soft);color:#1E4766}.tag.short{background:var(--alert-soft);color:#7a2c1c}.tag.no{background:#F1ECE6;color:var(--muted)}
+.hist .kv{cursor:pointer}
+.wa{display:block;text-align:center;text-decoration:none;margin-top:10px;border:1.5px solid #128C7E;color:#0E6E63;border-radius:14px;padding:13px;font-weight:800}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);background:var(--espresso);color:var(--milk);padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+</style>
+</head>
+<body>
+
+<section class="login" id="vLogin">
+  <h1>Cuadre de caja</h1>
+  <p>Ingreso solo para el personal de Coffit. Es la misma cuenta del panel de pedidos.</p>
+  <form id="fLogin">
+    <input class="f" id="em" type="email" placeholder="Correo de Coffit" autocomplete="username" required>
+    <div class="pwrap"><input class="f" id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required><button type="button" class="eye" id="eye" aria-label="Mostrar contraseña">Mostrar</button></div>
+    <button class="btn" id="bIn" type="submit">Ingresar</button>
+  </form>
+  <div class="msg" id="lMsg"></div>
+</section>
+
+<section class="hidden" id="vApp">
+  <header>
+    <div class="hrow">
+      <div class="brand">COFFIT<small>Caja</small></div>
+      <div class="hbtns"><a class="sbtn" href="/panel/">Pedidos</a><button class="sbtn" id="bOut">Salir</button></div>
+    </div>
+    <div class="daterow">
+      <button id="dPrev" aria-label="Día anterior">‹</button>
+      <div class="d"><span id="dTx"></span><small id="dSub"></small><input type="date" id="dPick" aria-label="Elegir fecha"></div>
+      <button id="dNext" aria-label="Día siguiente">›</button>
+    </div>
+    <div class="tabs">
+      <button class="tab" data-t="manana">☀️ Mañana<i id="iM"></i></button>
+      <button class="tab" data-t="tarde">🌙 Tarde<i id="iT"></i></button>
+      <button class="tab" data-t="dia">📊 Día</button>
+    </div>
+  </header>
+  <main id="main"></main>
+  <div class="saveBar" id="saveBar"><div class="in"><button class="btn" id="bSave">Guardar cuadre</button><div class="st" id="saveSt"></div></div></div>
+</section>
+
+<script>
+const SB_URL='https://curlxsugmcjurewfngqm.supabase.co', SB_KEY='sb_publishable_tJNmh5TnRt0gNB2Zo4C-kQ_Jnawdy9J';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r2=v=>Math.round((Number(v)||0)*100)/100;
+const fm=v=>'S/ '+r2(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const parse=s=>{ if(s==null)return 0; s=String(s).trim().replace(/\s/g,''); if(!s)return 0;
+  // "1.234,50" / "1,234.50" / "540,80" / "540.80"
+  if(s.includes(',')&&s.includes('.')) s=s.lastIndexOf(',')>s.lastIndexOf('.')?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');
+  else if(s.includes(',')) s=/,\d{1,2}$/.test(s)?s.replace(',','.'):s.replace(/,/g,'');
+  const n=parseFloat(s); return isFinite(n)?n:0 };
+const show=v=>{ v=r2(v); return v?String(v).replace('.',','):'' };
+const toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+const CHIPS={manana:['Compras','Bimbo','Jamón','Pan','Leche','Gas','Movilidad'],tarde:['Fruta','Pan Vital','Compras','Hielo','Leche','Movilidad']};
+const TURNO={manana:'Mañana',tarde:'Tarde'};
+
+/* ---------- Fecha (hora de Lima) ---------- */
+function limaToday(){ const d=new Date(Date.now()-5*3600e3); return d.toISOString().slice(0,10) }
+function addDays(f,n){ const d=new Date(f+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10) }
+function niceDate(f){ const t=new Date(f+'T12:00:00Z').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}); return t.charAt(0).toUpperCase()+t.slice(1) }
+function limaHour(){ return new Date(Date.now()-5*3600e3).getUTCHours() }
+
+let fecha=limaToday(), tab=limaHour()<15?'manana':'tarde';
+let data={manana:null,tarde:null,prevTarde:null,cierre:null}, form=null, dirty=false;
+
+/* ---------- Acceso (misma cuenta del panel) ---------- */
+const lmsg=(t,ok)=>{$('#lMsg').textContent=t;$('#lMsg').className='msg '+(ok?'ok':'err')};
+$('#fLogin').onsubmit=async e=>{
+  e.preventDefault(); lmsg('Ingresando…',true); $('#bIn').disabled=true;
+  const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim().toLowerCase(),password:$('#pw').value});
+  $('#bIn').disabled=false;
+  if(error){lmsg('Correo o contraseña incorrectos. Es la misma cuenta del panel de pedidos.');return}
+  start();
+};
+$('#eye').onclick=()=>{const p=$('#pw'),v=p.type==='password';p.type=v?'text':'password';$('#eye').textContent=v?'Ocultar':'Mostrar'};
+$('#bOut').onclick=async()=>{await sb.auth.signOut();location.reload()};
+
+let started=false, starting=false;
+async function start(){
+  if(started||starting)return; starting=true;
+  try{
+    const {data:{session}}=await sb.auth.getSession(); if(!session)return;
+    const {data:ok}=await sb.rpc('is_staff');
+    if(!ok){await sb.auth.signOut();lmsg('Este correo no está autorizado.');return}
+    $('#vLogin').classList.add('hidden'); $('#vApp').classList.remove('hidden');
+    started=true; await load();
+  } finally { starting=false }
+}
+
+/* ---------- Datos ---------- */
+async function load(){
+  const prev=addDays(fecha,-1);
+  const [c,p,d]=await Promise.all([
+    sb.from('cuadres_caja').select('*').eq('fecha',fecha),
+    sb.from('cuadres_caja').select('hay,fecha').eq('fecha',prev).eq('turno','tarde').maybeSingle(),
+    sb.from('cierres_dia').select('*').eq('fecha',fecha).maybeSingle(),
+  ]);
+  if(c.error){toast('Sin conexión. Revisa el internet.');}
+  data.manana=(c.data||[]).find(x=>x.turno==='manana')||null;
+  data.tarde=(c.data||[]).find(x=>x.turno==='tarde')||null;
+  data.prevTarde=p.data||null; data.cierre=d.data||null;
+  render();
+}
+function blank(t){
+  // La caja inicial se arrastra: mañana = lo que quedó anoche; tarde = lo que se contó en la mañana
+  const ci=t==='manana'?data.prevTarde?.hay:data.manana?.hay;
+  return {turno:t,responsable:store.get('coffit_resp')||'',caja_inicial:ci==null?'':show(ci),yape:'',efectivo:'',tarjeta:'',cambio:'',gastos:[],hay:'',nota:''};
+}
+function toForm(t){
+  const k='coffit_caja_'+fecha+'_'+t, draft=store.get(k);
+  if(draft) return draft;
+  const r=data[t]; if(!r) return blank(t);
+  return {turno:t,responsable:r.responsable||'',caja_inicial:show(r.caja_inicial),yape:show(r.yape),efectivo:show(r.efectivo),tarjeta:show(r.tarjeta),cambio:show(r.cambio),
+    gastos:(r.gastos||[]).map(g=>({concepto:g.concepto,monto:show(g.monto),pago:g.pago||'efectivo'})),hay:r.hay==null?'':show(r.hay),nota:r.nota||''};
+}
+function calc(f){
+  const ci=parse(f.caja_inicial), y=parse(f.yape), e=parse(f.efectivo), t=parse(f.tarjeta), cb=parse(f.cambio);
+  const gE=f.gastos.filter(g=>g.pago!=='yape').reduce((s,g)=>s+parse(g.monto),0);
+  const gY=f.gastos.filter(g=>g.pago==='yape').reduce((s,g)=>s+parse(g.monto),0);
+  const ventas=y+e+t, esperado=ci+e-gE-cb, hayOk=String(f.hay).trim()!=='', hay=parse(f.hay);
+  return {ci,y,e,t,cb,gE,gY,ventas,esperado:r2(esperado),hayOk,hay,dif:hayOk?r2(hay-esperado):null};
+}
+function verdict(dif){
+  if(dif==null) return {c:'',t:'Falta contar la caja',v:'—'};
+  if(Math.abs(dif)<0.05) return {c:'ok',t:'¡Caja cuadrada!',v:'✓ Cuadra'};
+  return dif>0?{c:'over',t:'Sobra en caja',v:'+ '+fm(dif)}:{c:'short',t:'Falta en caja',v:'− '+fm(-dif)};
+}
+
+/* ---------- Vista ---------- */
+function render(){
+  $('#dTx').textContent=niceDate(fecha);
+  $('#dSub').textContent=fecha===limaToday()?'Hoy · toca para cambiar la fecha':'Toca para cambiar la fecha';
+  $('#dPick').value=fecha;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  const mark=r=>!r?'':r.diferencia==null?' ·':Math.abs(r.diferencia)<0.05?' ✓':' !';
+  $('#iM').textContent=mark(data.manana); $('#iT').textContent=mark(data.tarde);
+  $('#saveBar').classList.toggle('hidden',tab==='dia');
+  if(tab==='dia') return renderDia();
+  form=toForm(tab); dirty=!!store.get('coffit_caja_'+fecha+'_'+tab);
+  renderTurno();
+}
+function moneyIn(id,val,extra=''){ return `<div class="money ${extra}"><span>S/</span><input id="${id}" inputmode="decimal" autocomplete="off" placeholder="0" value="${esc(val)}"></div>` }
+
+function renderTurno(){
+  const f=form, saved=data[tab];
+  const ciHint=tab==='manana'
+    ? (data.prevTarde?.hay!=null?`Lo que quedó anoche: ${fm(data.prevTarde.hay)}`:'Lo que hay en caja al abrir')
+    : (data.manana?.hay!=null?`Lo que se contó en la mañana: ${fm(data.manana.hay)}`:'Aún no se guarda el cuadre de la mañana');
+  $('#main').innerHTML=`
+  <div class="card">
+    <div class="row"><label for="resp">¿Quién hace el cuadre?</label><input class="f" id="resp" style="width:170px;margin:0" placeholder="Nombre" value="${esc(f.responsable)}"></div>
+    <div class="row"><label for="ci">Caja inicial<small>${ciHint}</small></label>${moneyIn('ci',f.caja_inicial)}</div>
+  </div>
+
+  <div class="card">
+    <h3>1 · Ventas del turno <b id="tV"></b></h3>
+    <div class="row"><label for="ya">Yape / Plin</label>${moneyIn('ya',f.yape)}</div>
+    <div class="row"><label for="ef">Efectivo</label>${moneyIn('ef',f.efectivo)}</div>
+    <div class="row"><label for="ta">Tarjeta</label>${moneyIn('ta',f.tarjeta)}</div>
+  </div>
+
+  <div class="card">
+    <h3>2 · Gastos <b id="tG"></b></h3>
+    <div id="gl"></div>
+    <button class="add" id="gAdd" type="button">+ Agregar gasto</button>
+    <div class="chips">${CHIPS[tab].map(c=>`<button class="chip" type="button" data-c="${c}">+ ${c}</button>`).join('')}</div>
+    <p class="hint">Toca <b>Efectivo</b> para cambiarlo a <b>Yape</b> si el gasto no salió de la caja (no se resta).</p>
+  </div>
+
+  <div class="card">
+    <div class="row"><label for="cb">Cambio Yape → efectivo<small>Cuando un cliente yapea y se le da efectivo de la caja.</small></label>${moneyIn('cb',f.cambio)}</div>
+  </div>
+
+  <div class="card">
+    <h3>3 · Resultado</h3>
+    <div class="calc" id="calc"></div>
+    <div class="row" style="margin-top:10px"><label for="hay">¿Cuánto hay en caja?<small>Cuenta el efectivo y escríbelo aquí.</small></label>${moneyIn('hay',f.hay)}</div>
+    <div class="verdict" id="verd"></div>
+    <textarea class="f note" id="nota" style="margin-top:10px" placeholder="Nota (opcional): por qué falta o sobra, algo que avisar…">${esc(f.nota)}</textarea>
+  </div>`;
+  drawGastos(); update();
+  $('#saveSt').textContent=saved?`Guardado ${new Date(saved.actualizado).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}${dirty?' · hay cambios sin guardar':''}`:(dirty?'Borrador sin guardar':'Aún no guardado');
+  const bind=(id,k)=>$('#'+id).addEventListener('input',e=>{f[k]=e.target.value;touch()});
+  bind('resp','responsable');bind('ci','caja_inicial');bind('ya','yape');bind('ef','efectivo');bind('ta','tarjeta');bind('cb','cambio');bind('hay','hay');bind('nota','nota');
+  $('#gAdd').onclick=()=>{f.gastos.push({concepto:'',monto:'',pago:'efectivo'});drawGastos();touch();const l=document.querySelectorAll('.g .f');l[l.length-1]?.focus()};
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{f.gastos.push({concepto:b.dataset.c,monto:'',pago:'efectivo'});drawGastos();touch();const l=document.querySelectorAll('.g input[inputmode]');l[l.length-1]?.focus()});
+}
+function drawGastos(){
+  const f=form;
+  $('#gl').innerHTML=f.gastos.length?f.gastos.map((g,i)=>`<div class="g">
+      <input class="f" data-i="${i}" data-k="concepto" placeholder="¿En qué?" value="${esc(g.concepto)}">
+      <div class="money"><span>S/</span><input data-i="${i}" data-k="monto" inputmode="decimal" placeholder="0" value="${esc(g.monto)}"></div>
+      <button class="pill ${g.pago==='yape'?'yape':''}" data-p="${i}" type="button">${g.pago==='yape'?'Yape':'Efectivo'}</button>
+      <button class="del" data-x="${i}" type="button" aria-label="Quitar gasto">×</button></div>`).join('')
+    :'<p class="hint" style="margin:0 0 4px">Sin gastos en este turno.</p>';
+  document.querySelectorAll('.g input').forEach(inp=>inp.addEventListener('input',e=>{f.gastos[+e.target.dataset.i][e.target.dataset.k]=e.target.value;touch()}));
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const g=f.gastos[+b.dataset.p];g.pago=g.pago==='yape'?'efectivo':'yape';drawGastos();touch()});
+  document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{f.gastos.splice(+b.dataset.x,1);drawGastos();touch()});
+}
+function touch(){ dirty=true; store.set('coffit_caja_'+fecha+'_'+tab,form); $('#saveSt').textContent='Hay cambios sin guardar'; update() }
+function update(){
+  const c=calc(form);
+  $('#tV').textContent=fm(c.ventas);
+  $('#tG').textContent=fm(c.gE+c.gY);
+  $('#calc').innerHTML=`
+    <div><span>Caja inicial</span><span>${fm(c.ci)}</span></div>
+    <div><span>+ Ventas en efectivo</span><span>${fm(c.e)}</span></div>
+    <div class="m"><span>− Gastos en efectivo</span><span>${fm(c.gE)}</span></div>
+    ${c.cb?`<div class="m"><span>− Cambio Yape → efectivo</span><span>${fm(c.cb)}</span></div>`:''}
+    <div class="eq"><span>Debería haber</span><span>${fm(c.esperado)}</span></div>`;
+  const v=verdict(c.dif);
+  $('#verd').className='verdict '+v.c; $('#verd').innerHTML=`<span>${v.t}</span><b class="num">${v.v}</b>`;
+}
+
+$('#bSave').onclick=async()=>{
+  const f=form, c=calc(f);
+  if(!c.ventas&&!f.gastos.length){toast('Escribe al menos las ventas del turno');return}
+  const bad=f.gastos.find(g=>parse(g.monto)>0&&!String(g.concepto).trim());
+  if(bad){toast('Escribe en qué fue cada gasto');return}
+  if(!c.hayOk&&!confirm('Aún no escribiste cuánto hay en caja. ¿Guardar igual?'))return;
+  if(f.responsable) store.set('coffit_resp',f.responsable.trim());
+  const row={fecha,turno:tab,responsable:f.responsable.trim()||null,caja_inicial:r2(c.ci),yape:r2(c.y),efectivo:r2(c.e),tarjeta:r2(c.t),cambio:r2(c.cb),
+    gastos:f.gastos.filter(g=>parse(g.monto)>0).map(g=>({concepto:String(g.concepto).trim(),monto:r2(parse(g.monto)),pago:g.pago})),
+    hay:c.hayOk?r2(c.hay):null,nota:f.nota.trim()||null,cerrado:c.hayOk};
+  $('#bSave').disabled=true; $('#bSave').textContent='Guardando…';
+  const {data:saved,error}=await sb.from('cuadres_caja').upsert(row,{onConflict:'fecha,turno'}).select().single();
+  $('#bSave').disabled=false; $('#bSave').textContent='Guardar cuadre';
+  if(error){toast('No se pudo guardar. Revisa el internet y vuelve a tocar.');return}
+  store.del('coffit_caja_'+fecha+'_'+tab); data[tab]=saved; dirty=false;
+  const v=verdict(saved.diferencia);
+  toast('Guardado · '+(saved.diferencia==null?'falta contar la caja':v.c==='ok'?'caja cuadrada ✓':v.t.toLowerCase()+' '+fm(Math.abs(saved.diferencia))));
+  // Si hay un borrador de la tarde sin caja inicial, le pasamos lo contado en la mañana
+  if(tab==='manana'){const k='coffit_caja_'+fecha+'_tarde',d=store.get(k);if(d&&!String(d.caja_inicial).trim()&&saved.hay!=null){d.caja_inicial=show(saved.hay);store.set(k,d)}}
+  render();
+};
+
+/* ---------- Resumen del día ---------- */
+async function renderDia(){
+  const M=data.manana, T=data.tarde, rows=[M,T].filter(Boolean);
+  const sum=k=>rows.reduce((s,r)=>s+Number(r[k]||0),0);
+  const ventas=sum('total_ventas'), cambios=sum('cambio'), neta=r2(ventas-cambios);
+  const tumi=data.cierre?.venta_tumisoft;
+  const difT=tumi==null?null:r2(neta-tumi);
+  const tagOf=r=>{ if(!r) return '<span class="tag no">Sin cuadre</span>'; const v=verdict(r.diferencia); return `<span class="tag ${v.c||'no'}">${v.v==='—'?'Sin contar':v.v}</span>` };
+  const efFinal=T?.hay??M?.hay;
+  $('#main').innerHTML=`
+  <div class="card">
+    <h3>Ventas del día</h3>
+    <div class="kv"><span>☀️ Mañana</span><b>${M?fm(M.total_ventas):'—'}</b></div>
+    <div class="kv"><span>🌙 Tarde</span><b>${T?fm(T.total_ventas):'—'}</b></div>
+    <div class="kv"><span>Yape / Plin</span><b>${fm(sum('yape'))}</b></div>
+    <div class="kv"><span>Efectivo</span><b>${fm(sum('efectivo'))}</b></div>
+    <div class="kv"><span>Tarjeta</span><b>${fm(sum('tarjeta'))}</b></div>
+    ${cambios?`<div class="kv"><span>− Cambios Yape → efectivo</span><b>${fm(cambios)}</b></div>`:''}
+    <div class="sum"><span>Venta real del día</span><span class="num">${fm(neta)}</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Comparar con TumiSoft</h3>
+    <div class="row"><label for="tumi">Total del día en TumiSoft<small>El total de ventas del reporte de hoy.</small></label>${moneyIn('tumi',tumi==null?'':show(tumi))}</div>
+    <div class="verdict ${difT==null?'':Math.abs(difT)<0.05?'ok':difT>0?'over':'short'}" id="vT">${difT==null?'<span>Escribe el total de TumiSoft para comparar</span>':Math.abs(difT)<0.05?'<span>Coincide con TumiSoft</span><b>✓ Cuadra</b>':`<span>${difT>0?'El cuaderno tiene más que TumiSoft':'TumiSoft tiene más que el cuaderno'}</span><b class="num">${fm(Math.abs(difT))}</b>`}</div>
+    <button class="btn" id="bTumi" style="margin-top:10px">Guardar total TumiSoft</button>
+  </div>
+
+  <div class="card">
+    <h3>Caja</h3>
+    <div class="kv"><span>☀️ Mañana</span>${tagOf(M)}</div>
+    <div class="kv"><span>🌙 Tarde</span>${tagOf(T)}</div>
+    <div class="kv"><span>Gastos del día</span><b>${fm(sum('total_gastos'))}</b></div>
+    <div class="kv"><span>Efectivo que queda en caja</span><b>${efFinal==null?'—':fm(efFinal)}</b></div>
+    ${rows.filter(r=>r.nota).map(r=>`<p class="hint">📝 ${TURNO[r.turno]}: ${esc(r.nota)}</p>`).join('')}
+    ${rows.length?`<a class="wa" id="bWa" target="_blank" rel="noopener">Enviar resumen por WhatsApp</a>`:''}
+  </div>
+
+  <div class="card hist"><h3>Últimos 14 días</h3><div id="hist"><p class="hint">Cargando…</p></div></div>`;
+
+  $('#bTumi').onclick=async()=>{
+    const v=String($('#tumi').value).trim();
+    const {data:d,error}=await sb.from('cierres_dia').upsert({fecha,venta_tumisoft:v?r2(parse(v)):null,actualizado:new Date().toISOString()},{onConflict:'fecha'}).select().single();
+    if(error){toast('No se pudo guardar. Revisa el internet.');return}
+    data.cierre=d; toast('Total de TumiSoft guardado'); renderDia();
+  };
+  if($('#bWa')){
+    const line=r=>!r?'sin cuadre':r.diferencia==null?'sin contar':Math.abs(r.diferencia)<0.05?'cuadra ✓':(r.diferencia>0?'sobra ':'falta ')+fm(Math.abs(r.diferencia));
+    const txt=`*Cuadre Coffit · ${niceDate(fecha)}*\n`+
+      `Mañana: ventas ${M?fm(M.total_ventas):'—'} · caja ${line(M)}\n`+
+      `Tarde: ventas ${T?fm(T.total_ventas):'—'} · caja ${line(T)}\n`+
+      `Yape ${fm(sum('yape'))} · Efectivo ${fm(sum('efectivo'))} · Tarjeta ${fm(sum('tarjeta'))}\n`+
+      (cambios?`Cambios Yape→efectivo: ${fm(cambios)}\n`:'')+
+      `*Venta real: ${fm(neta)}*`+(tumi!=null?` · TumiSoft ${fm(tumi)}${Math.abs(difT)<0.05?' ✓':' (dif. '+fm(difT)+')'}`:'')+`\n`+
+      `Gastos: ${fm(sum('total_gastos'))} · Queda en caja: ${efFinal==null?'—':fm(efFinal)}`+
+      rows.filter(r=>r.nota).map(r=>`\nNota ${TURNO[r.turno].toLowerCase()}: ${r.nota}`).join('');
+    $('#bWa').href='https://wa.me/?text='+encodeURIComponent(txt);
+  }
+  // Historial
+  const desde=addDays(fecha,-13);
+  const [h,hc]=await Promise.all([
+    sb.from('cuadres_caja').select('fecha,turno,total_ventas,cambio,diferencia').gte('fecha',desde).lte('fecha',fecha),
+    sb.from('cierres_dia').select('fecha,venta_tumisoft').gte('fecha',desde).lte('fecha',fecha)]);
+  if(tab!=='dia')return;
+  const by={}; (h.data||[]).forEach(r=>{(by[r.fecha]=by[r.fecha]||{v:0,d:0,n:0,open:0});const b=by[r.fecha];b.v+=Number(r.total_ventas)-Number(r.cambio);b.n++;if(r.diferencia==null)b.open++;else b.d+=Number(r.diferencia)});
+  const days=Object.keys(by).sort().reverse();
+  $('#hist').innerHTML=days.length?days.map(f=>{const b=by[f],d=r2(b.d);const tg=b.open?'<span class="tag no">Incompleto</span>':Math.abs(d)<0.05?'<span class="tag ok">✓</span>':`<span class="tag ${d>0?'over':'short'}">${d>0?'+':'−'}${fm(Math.abs(d))}</span>`;
+    return `<div class="kv" data-f="${f}"><span style="text-transform:capitalize">${new Date(f+'T12:00:00Z').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'})}</span><span><b>${fm(b.v)}</b> &nbsp;${tg}</span></div>`}).join('')
+    +(()=>{const tot=days.reduce((s,f)=>s+(by[f].open?0:by[f].d),0);return `<div class="sum"><span>Falta/sobra acumulado</span><span class="num">${tot<0?'−':'+'}${fm(Math.abs(tot))}</span></div>`})()
+    :'<p class="hint">Todavía no hay cuadres guardados.</p>';
+  document.querySelectorAll('[data-f]').forEach(el=>el.onclick=()=>{goDate(el.dataset.f)});
+}
+
+/* ---------- Navegación ---------- */
+function goDate(f){ if(f>limaToday()){toast('Ese día aún no llega');return} fecha=f; load(); scrollTo(0,0) }
+$('#dPrev').onclick=()=>goDate(addDays(fecha,-1));
+$('#dNext').onclick=()=>goDate(addDays(fecha,1));
+$('#dPick').onchange=e=>{ if(e.target.value) goDate(e.target.value) };
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();scrollTo(0,0)});
+window.addEventListener('beforeunload',e=>{ if(dirty&&tab!=='dia'){e.preventDefault();e.returnValue=''} });
+
+sb.auth.onAuthStateChange(ev=>{ if(ev==='SIGNED_IN') setTimeout(start,0) });
+start();
+</script>
+</body>
+</html>

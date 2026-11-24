@@ -178,8 +178,8 @@ function todayStartISO(){ // inicio del día en Lima (UTC-5)
   return new Date(lima.getTime()+5*3600e3).toISOString();
 }
 const ph=c=>String(c||'').replace(/\D/g,'').slice(-9);
-async function loadHist(){ // sellos del Club: pedidos entregados por celular
-  const {data}=await sb.from('pedidos').select('id,celular').eq('estado','entregado').limit(10000);
+async function loadHist(){ // sellos del Club: pedidos no cancelados por celular (igual que la app del cliente)
+  const {data}=await sb.from('pedidos').select('id,celular').neq('estado','cancelado').limit(10000);
   hist={}; (data||[]).forEach(o=>{const k=ph(o.celular);(hist[k]=hist[k]||new Set()).add(o.id)});
 }
 function club(o){ // cuántos entregados antes de este pedido
@@ -192,8 +192,8 @@ async function load(){
 }
 function subscribe(){
   sb.channel('pedidos-panel').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},p=>{
-    if(p.eventType==='INSERT'){orders.push(p.new);fresh.add(p.new.id);alertNew(p.new)}
-    else if(p.eventType==='UPDATE'){const k=ph(p.new.celular);if(p.new.estado==='entregado')(hist[k]=hist[k]||new Set()).add(p.new.id);else if(hist[k])hist[k].delete(p.new.id);const i=orders.findIndex(o=>o.id===p.new.id); if(i>=0)orders[i]=p.new; else orders.push(p.new)}
+    if(p.eventType==='INSERT'){orders.push(p.new);{const k=ph(p.new.celular);(hist[k]=hist[k]||new Set()).add(p.new.id)}fresh.add(p.new.id);alertNew(p.new)}
+    else if(p.eventType==='UPDATE'){const k=ph(p.new.celular);if(p.new.estado!=='cancelado')(hist[k]=hist[k]||new Set()).add(p.new.id);else if(hist[k])hist[k].delete(p.new.id);const i=orders.findIndex(o=>o.id===p.new.id); if(i>=0)orders[i]=p.new; else orders.push(p.new)}
     draw();
   }).subscribe(s=>{const on=s==='SUBSCRIBED';$('#live').classList.toggle('on',on);$('#liveTx').textContent=on?'En vivo':'Reconectando'});
 }
@@ -253,7 +253,7 @@ function card(o){
   const wa=`https://wa.me/${phone(o.celular)}?text=${encodeURIComponent(({preparando:`Hola ${o.nombre}, ya estamos preparando tu pedido #${o.id} de Coffit.`,'en camino':o.modo==='delivery'?`Hola ${o.nombre}, tu pedido #${o.id} de Coffit ya va en camino.`:o.modo==='recojo'?`Hola ${o.nombre}, tu pedido #${o.id} de Coffit está listo. Ya puedes pasar a recogerlo en Calle Libertad 316.`:`Hola ${o.nombre}, tu pedido #${o.id} ya está listo.`})[o.estado]||`Hola ${o.nombre}, te escribimos de Coffit por tu pedido #${o.id}.`)}`;
   return `<div class="card ${o.modo} ${fresh.has(o.id)?'fresh':''}">
     <div class="ct"><span class="mode">${MODE[o.modo]||o.modo} · #${o.id}</span><span class="age ${o.estado==='nuevo'&&mins>5?'late':''}">${ago(o.creado)}</span></div>
-    <div class="who">${esc(o.nombre)}</div>${(()=>{const n=club(o);return n>0&&n%5===0?`<div class="gift">☕ Le toca café caliente GRATIS (completó ${n} pedidos)</div>`:`<div class="meta">Club: sello ${n%5+1} de 5</div>`})()}
+    <div class="who">${esc(o.nombre)}</div>${(()=>{const n=club(o);return n>0&&n%5===0?`<div class="gift">☕ Le toca café caliente GRATIS (completó sus ${n} sellos)</div>`:`<div class="meta">Club: sello ${n%5+1} de 5</div>`})()}
     <div class="meta">${where}<br>${esc(o.celular)}</div>
     <ul class="items">${items}</ul>
     <div class="tot"><span>Total</span><span>${money(o.total)}</span></div>

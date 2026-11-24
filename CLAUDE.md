@@ -2,7 +2,7 @@
 
 > **Para Claude:** lee este archivo al empezar cualquier chat del proyecto "CREAR APPS". Cuando cambies algo de la app, actualiza la sección que corresponda, agrega una línea al **Registro de cambios** con la fecha, y guarda el archivo en los tres lugares (ver "Dónde vive este archivo").
 >
-> Última actualización: 21 nov 2026, versión V11 (módulo Cuadre de caja en /caja).
+> Última actualización: 24 nov 2026, versión V11.1 (Club Coffit con sellos reales y aviso de café gratis).
 
 ---
 
@@ -177,8 +177,8 @@ Git está instalado en `C:\Program Files\Git`.
 | 16 nov 2026 | V4 | Logo real de Coffit arriba y sello en el Club. |
 | 16 nov 2026 | V5 | Botón flotante de WhatsApp; número oficial 944 667 516; se quitó el número del pago con Yape. Publicada en https://coffit-app.vercel.app (GitHub + Vercel). |
 | 17 nov 2026 | V7 | Cambio de modo visible: cada modo tiene su color, ícono y aviso explicativo, con animación y toast al cambiar; la barra del pedido muestra el modo. |
+| 24 nov 2026 | V11.1 | Club Coffit: sellos reales desde Supabase (`club_sellos`), cada pedido no cancelado suma; aviso de café gratis en la app (franja verde, Club y aviso emergente) y en el WhatsApp. El panel también cuenta pedidos no cancelados. Caso Betsy (970507686): 5 pedidos, 3 sin marcar Entregado. |
 | 21 nov 2026 | V11 | Cuadre de caja en /caja: turnos mañana y tarde, cálculo automático (caja inicial + efectivo − gastos en efectivo − cambio), falta/sobra, resumen del día con comparación TumiSoft, WhatsApp e historial. Tablas `cuadres_caja` y `cierres_dia` con RLS para staff. Botón "Caja" en el panel. |
-| 24 nov 2026 | V10.9 | Club Coffit: sellos reales desde Supabase (`club_sellos`), cada pedido no cancelado suma; aviso de café gratis en la app (franja verde, Club y aviso emergente) y en el WhatsApp. El panel también cuenta pedidos no cancelados. Caso Betsy (970507686): 5 pedidos, 3 sin marcar Entregado. |
 | 21 nov 2026 | V10.8 | Fotos nuevas (hechas por David con ChatGPT): Waffle Oreo, Panqueques americanos clásicos, Waffle tropical (reemplaza la anterior, también en la tarjeta Desayunos del inicio), Panqueques Coffit y Ensalada de frutas. |
 | 19 nov 2026 | V10.7 | Pedidos solo hasta las 10:30 p. m. (app y base de datos); arriba dice "Abierto hasta las 10:30 p. m.". |
 | 18 nov 2026 | V10.6 | Fotos nuevas enviadas por David: Chanchito al horno, Capresse, Sándwich mixto, Chicken caprese (reemplaza la anterior), Sándwich con lomo, Sándwich fit, Desayuno clásico y Desayuno tropical. |
